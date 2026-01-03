@@ -1,4 +1,4 @@
-import { FileText, MessageSquare, Users } from 'lucide-react';
+import { FileText, type LucideIcon, MessageSquare, Users } from 'lucide-react';
 import { comments, posts, users } from '@/data/mockData';
 
 export function AdminStats() {
@@ -15,13 +15,12 @@ export function AdminStats() {
   );
 }
 
-// 내부용 작은 컴포넌트
 function StatCard({
   icon: Icon,
   count,
   label,
 }: {
-  icon: any;
+  icon: LucideIcon;
   count: number;
   label: string;
 }) {

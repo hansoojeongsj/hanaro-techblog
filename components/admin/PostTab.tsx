@@ -1,8 +1,17 @@
 'use client';
 
-import { Loader2, MoreHorizontal, Search, Trash2 } from 'lucide-react';
+import {
+  Edit,
+  Loader2,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Trash2,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -19,30 +28,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { comments, posts, users } from '@/data/mockData';
-import { deleteCommentAction } from '../admin.action';
+import { categories, posts, users } from '@/data/mockData';
+import { deletePostAction } from '../../app/admin/admin.action';
 
-export function CommentTab() {
+export function PostTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const router = useRouter();
 
-  const filteredComments = comments.filter((c) =>
-    c.content.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredPosts = posts.filter((p) =>
+    p.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const handleDelete = async (id: string) => {
-    if (!confirm('정말 댓글을 삭제하시겠습니까?')) return;
+    if (!confirm('정말 게시글을 삭제하시겠습니까?')) return;
     setIsDeleting(id);
     try {
-      const result = await deleteCommentAction(id);
+      const result = await deletePostAction(id);
       if (result.success) toast.success(result.message);
     } catch {
       toast.error('삭제 실패');
@@ -57,49 +59,54 @@ export function CommentTab() {
         <div className="relative w-full max-w-sm">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="댓글 검색..."
+            placeholder="게시글 검색..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
           />
         </div>
+        <Button onClick={() => router.push('/admin/write')}>
+          <Plus className="mr-2 h-4 w-4" /> 새 글 작성
+        </Button>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>내용</TableHead>
+              <TableHead>제목</TableHead>
+              <TableHead>카테고리</TableHead>
               <TableHead>작성자</TableHead>
-              <TableHead>게시글</TableHead>
               <TableHead>작성일</TableHead>
               <TableHead className="w-12.5"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredComments.map((comment) => {
-              const author = users.find((u) => u.id === comment.authorId);
-              const post = posts.find((p) => p.id === comment.postId);
+            {filteredPosts.map((post) => {
+              const category = categories.find((c) => c.id === post.categoryId);
+              const author = users.find((u) => u.id === post.authorId);
 
               return (
-                <TableRow key={comment.id}>
-                  <TableCell className="max-w-xs truncate">
-                    {comment.isDeleted ? (
-                      <span className="text-muted-foreground italic">
-                        삭제된 댓글입니다
-                      </span>
-                    ) : (
-                      comment.content
-                    )}
+                <TableRow key={post.id}>
+                  <TableCell className="max-w-xs truncate font-medium">
+                    {post.title}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      style={{
+                        borderColor: category?.color,
+                        color: category?.color,
+                      }}
+                    >
+                      {category?.name}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {author?.name}
                   </TableCell>
-                  <TableCell className="max-w-xs truncate text-muted-foreground">
-                    {post?.title}
-                  </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatDate(comment.createdAt)}
+                    {new Date(post.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -107,9 +114,9 @@ export function CommentTab() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          disabled={isDeleting === comment.id}
+                          disabled={isDeleting === post.id}
                         >
-                          {isDeleting === comment.id ? (
+                          {isDeleting === post.id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <MoreHorizontal className="h-4 w-4" />
@@ -117,9 +124,12 @@ export function CommentTab() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Edit className="mr-2 h-4 w-4" /> 수정
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive"
-                          onClick={() => handleDelete(comment.id)}
+                          onClick={() => handleDelete(post.id)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" /> 삭제
                         </DropdownMenuItem>
