@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-// 타입 정의 (나중에 types 폴더로 빼셔도 됩니다)
+// 임시 타입 정의
 type Category = {
   id: string;
   name: string;
@@ -17,7 +17,6 @@ type Category = {
   postCount: number;
 };
 
-// 아이콘 매핑이나 설명은 여기서 관리하거나, DB에서 받아오도록 확장 가능
 const categoryIcons: Record<string, string> = {
   javascript: '🟨',
   typescript: '🔷',

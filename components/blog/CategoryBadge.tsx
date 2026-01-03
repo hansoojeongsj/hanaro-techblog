@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
-// 타입 정의가 없다면 임시로 any 처리하거나 타입을 만듭니다.
-// import type { Category } from '@/types/blog';
+// 임시
 type Category = {
   id: string;
   name: string;
@@ -29,7 +28,7 @@ export function CategoryBadge({
   showCount = false,
   size = 'md',
 }: CategoryBadgeProps) {
-  // 방어 코드: category가 undefined일 경우 처리
+  // category가 undefined일 경우
   if (!category) return null;
 
   const colorClass =

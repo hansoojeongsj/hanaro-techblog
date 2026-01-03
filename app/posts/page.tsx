@@ -2,10 +2,10 @@
 
 import { FileText, Search, X } from 'lucide-react';
 import { useState } from 'react';
-import { PostCard } from '@/components/blog/PostCard'; // 👈 이미 있는 컴포넌트
+import { PostCard } from '@/components/blog/PostCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { categories, posts } from '@/data/mockData'; // 데이터 가져오기
+import { categories, posts } from '@/data/mockData';
 
 export default function PostsPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,7 +14,8 @@ export default function PostsPage() {
   // 헬퍼 함수: ID로 카테고리 객체 찾기
   const getCategoryById = (id: string) => categories.find((c) => c.id === id);
 
-  // 🔍 필터링 로직 (검색어 + 카테고리)
+  // 임시
+  // 필터링 로직 (검색어 + 카테고리)
   const filteredPosts = posts.filter((post) => {
     const matchesSearch =
       searchQuery === '' ||
@@ -35,7 +36,7 @@ export default function PostsPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      {/* 1. 헤더 영역 */}
+      {/* 헤더 영역 */}
       <div className="mb-12 animate-fade-in text-center">
         <h1 className="mb-4 font-bold text-3xl md:text-4xl">전체 게시글</h1>
         <p className="mx-auto max-w-xl text-muted-foreground">
@@ -43,14 +44,14 @@ export default function PostsPage() {
         </p>
       </div>
 
-      {/* 2. 검색 및 필터 영역 */}
+      {/* 검색 및 필터 영역 */}
       <div className="mx-auto mb-12 max-w-4xl animate-slide-up space-y-6">
-        {/* 검색바 (Shadcn Input 활용) */}
+        {/* 검색바 (Shadcn Input) */}
         <div className="relative">
           <Search className="-translate-y-1/2 absolute top-1/2 left-4 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="제목 또는 내용으로 검색..."
+            placeholder="제목 또는 내용으로 검색해주세요."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-14 bg-card pl-12 text-lg shadow-sm"
@@ -120,7 +121,7 @@ export default function PostsPage() {
         )}
       </div>
 
-      {/* 3. 게시글 그리드 (PostCard 활용) */}
+      {/* 게시글 그리드 (PostCard) */}
       <div className="mx-auto max-w-6xl">
         {filteredPosts.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -130,7 +131,6 @@ export default function PostsPage() {
                 className="animate-slide-up"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                {/* 📌 이미 있는 PostCard 컴포넌트 사용 */}
                 <PostCard
                   post={post}
                   category={getCategoryById(post.categoryId)}
@@ -139,7 +139,6 @@ export default function PostsPage() {
             ))}
           </div>
         ) : (
-          /* 검색 결과 없음 */
           <div className="animate-fade-in rounded-xl border border-border border-dashed bg-muted/10 py-24 text-center">
             <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted">
               <Search className="h-8 w-8 text-muted-foreground" />

@@ -66,7 +66,7 @@ export default function Footer() {
             <h4 className="font-semibold">링크</h4>
             <ul className="space-y-2 text-muted-foreground text-sm">
               <li>
-                {/* 소개 링크에 핸들러 연결 */}
+                {/* 추후 연결 예정 -> Link */}
                 <Link
                   href="#"
                   onClick={handleNotImplemented}
@@ -84,7 +84,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                {/* 문의하기 링크에 핸들러 연결 */}
+                {/* 추후 연결 예정 -> Link */}
                 <Link
                   href="#"
                   onClick={handleNotImplemented}

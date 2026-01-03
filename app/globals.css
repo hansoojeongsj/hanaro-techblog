@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* 2. Shadcn 변수 매핑 (구조 유지) */
+  /* Shadcn 변수 매핑 (구조 유지) */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -50,7 +50,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  /* 3. 잔디밭(Grass) 색상 매핑 추가 */
+  /* Grass Colors */
   --color-grass-0: var(--grass-0);
   --color-grass-1: var(--grass-1);
   --color-grass-2: var(--grass-2);
@@ -58,13 +58,13 @@
   --color-grass-4: var(--grass-4);
 }
 
-/* 4. 색상 값 교체 (Lovable의 HSL 값으로 변경) */
+/* 색상 값 교체 (HSL 값) */
 :root {
   --font-sans: "Pretendard", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --radius: 0.75rem;
 
-  /* Lovable Light Theme Colors (converted to hsl syntax) */
+  /* Light Theme Colors (hsl syntax) */
   --background: hsl(220 20% 97%);
   --foreground: hsl(220 20% 10%);
 
@@ -94,7 +94,7 @@
   --input: hsl(220 13% 91%);
   --ring: hsl(168 76% 42%);
 
-  /* Charts (Teal 계열로 조정) */
+  /* Charts */
   --chart-1: hsl(168 76% 42%);
   --chart-2: hsl(168 60% 70%);
   --chart-3: hsl(220 20% 50%);
@@ -120,7 +120,7 @@
 }
 
 .dark {
-  /* Lovable Dark Theme Colors */
+  /* Dark Theme Colors */
   --background: hsl(220 25% 8%);
   --foreground: hsl(220 15% 95%);
 
@@ -192,7 +192,7 @@
   }
 }
 
-/* 5. Lovable 애니메이션 및 유틸리티 추가 */
+/* 애니메이션 및 유틸리티 추가 */
 @layer components {
   .grass-cell {
     @apply w-3 h-3 rounded-sm transition-all duration-200;
@@ -204,7 +204,7 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/70;
   }
 
   .animate-fade-in {

@@ -9,11 +9,11 @@ import { categories, grassData, posts } from '@/data/mockData';
 
 export default function HomePage() {
   const recentPosts = posts.slice(0, 4);
-  // 간단한 find 함수 (타입 안전하게 사용)
+
   const getCategoryById = (id: string) => categories.find((c) => c.id === id);
 
   return (
-    // Layout 컴포넌트는 app/layout.tsx에 이미 있으므로 div로 시작해도 됩니다.
+    // Layout 컴포넌트는 app/layout.tsx에 이미 있으므로 div로 시작
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20">
