@@ -143,7 +143,7 @@
   --accent: hsl(176 50% 20%);
   --accent-foreground: hsl(176 70% 80%);
 
-  --destructive: hsl(0 62% 30%);
+  --destructive: hsl(0, 77%, 59%);
   --destructive-foreground: hsl(0 0% 100%);
 
   --border: hsl(215 20% 20%);

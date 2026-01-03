@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { CommentForm } from './CommentForm';
 import { CommentItem, type CommentType } from './CommentItem';
 
-// 초기 더미 데이터 (부모에서 받아와도 됨)
+// 초기 더미 데이터
 const initialComments: CommentType[] = [
   {
     id: '1',
@@ -92,8 +92,8 @@ export function CommentList() {
             <CommentItem
               comment={comment}
               onReply={setReplyToId}
-              onEdit={handleEditComment} // ✨ 전달
-              onDelete={handleDeleteComment} // ✨ 전달
+              onEdit={handleEditComment}
+              onDelete={handleDeleteComment}
             />
 
             {/* 대댓글 렌더링 (들여쓰기 적용됨) */}
@@ -102,8 +102,8 @@ export function CommentList() {
                 key={reply.id}
                 comment={reply}
                 onReply={setReplyToId}
-                onEdit={handleEditComment} // ✨ 전달
-                onDelete={handleDeleteComment} // ✨ 전달
+                onEdit={handleEditComment}
+                onDelete={handleDeleteComment}
                 isReply={true}
               />
             ))}
