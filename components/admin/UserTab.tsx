@@ -22,7 +22,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { users } from '@/data/mockData';
-import { deleteUserAction } from '../admin.action'; // 👈 파일명 actions.ts로 맞춤
+import { deleteUserAction } from '../../app/admin/admin.action';
 
 export function UserTab() {
   const [searchQuery, setSearchQuery] = useState('');

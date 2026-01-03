@@ -8,10 +8,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'; // 👈 Shadcn Card 컴포넌트 불러오기
+} from '@/components/ui/card';
 import { CategoryBadge } from './CategoryBadge';
 
-// 타입 정의
+// 임시 타입 정의
 type Post = {
   id: string;
   title: string;
@@ -46,15 +46,15 @@ export function PostCard({ post, category }: PostCardProps) {
   };
 
   return (
-    // 1️⃣ Card: 전체 감싸기 (article 대신 사용)
-    // 기존의 hover 효과나 transition은 그대로 className에 넣어줍니다.
+    // Card: 전체 감싸기 (article 대신 사용)
+    // 기존 hover나 transition은 그대로 className에
     <Card className="group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
       {/* 카드 전체 클릭 링크 (absolute position) */}
       <Link href={`/posts/${post.id}`} className="absolute inset-0 z-10">
         <span className="sr-only">상세보기</span>
       </Link>
 
-      {/* 2️⃣ CardHeader: 카테고리, 날짜, 제목 */}
+      {/* CardHeader: 카테고리, 날짜, 제목 */}
       <CardHeader>
         {/* 카테고리 & 날짜 (제목 위쪽 메타데이터) */}
         <div className="mb-2 flex items-center justify-between">
@@ -71,21 +71,21 @@ export function PostCard({ post, category }: PostCardProps) {
           </div>
         </div>
 
-        {/* 제목 (CardTitle 사용) */}
+        {/* 제목 (CardTitle) */}
         <CardTitle className="line-clamp-2 text-lg transition-colors group-hover:text-primary">
           {post.title}
         </CardTitle>
       </CardHeader>
 
-      {/* 3️⃣ CardContent: 내용 요약 */}
+      {/* CardContent 내용 요약 */}
       <CardContent className="flex-1">
-        {/* 요약글 (CardDescription 사용) */}
+        {/* 요약글 (CardDescription) */}
         <CardDescription className="line-clamp-2">
           {post.excerpt}
         </CardDescription>
       </CardContent>
 
-      {/* 4️⃣ CardFooter: 작성자 및 통계 (하단 고정) */}
+      {/* CardFooter: 작성자 및 통계 (하단 고정) */}
       <CardFooter className="border-t pt-4">
         <div className="flex w-full items-center justify-between">
           {/* Author */}

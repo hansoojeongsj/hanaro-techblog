@@ -19,7 +19,7 @@ interface GrassCalendarProps {
 }
 
 export function GrassCalendar({ data }: GrassCalendarProps) {
-  // 1️⃣ 날짜 → 데이터 Map
+  // 날짜 → 데이터 Map
   const dataMap = useMemo(() => {
     const map = new Map<string, GrassData>();
     for (const item of data) {
@@ -28,7 +28,7 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     return map;
   }, [data]);
 
-  // 2️⃣ 오늘 기준 최근 365일 (빈 날 포함)
+  // 오늘 기준 최근 365일 (빈 날 포함)
   const fullYearData = useMemo(() => {
     const result: GrassData[] = [];
     const today = new Date();

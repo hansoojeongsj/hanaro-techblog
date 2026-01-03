@@ -34,7 +34,6 @@ export default function Header({ isLoggedIn = false, user }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-border border-b bg-background/80 backdrop-blur">
       <div className="container mx-auto px-4">
-        {/* relative 추가 */}
         <div className="relative flex h-16 items-center">
           {/* Left: Logo */}
           <Link
@@ -45,7 +44,7 @@ export default function Header({ isLoggedIn = false, user }: HeaderProps) {
             <span className="hidden text-2xl lg:inline">Hanaro TechBlog</span>
           </Link>
 
-          {/* Center: Navigation (정중앙 고정) */}
+          {/* Center: Navigation (정중앙) */}
           <nav className="-translate-x-1/2 absolute left-1/2 hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
               <Link
