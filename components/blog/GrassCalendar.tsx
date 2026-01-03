@@ -140,7 +140,7 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     });
 
   return (
-    <div className="w-fit rounded-xl border border-border bg-card p-6 shadow-sm">
+    <div className="w-full rounded-xl border border-border bg-card p-6 shadow-sm">
       {/* 헤더 */}
       <div className="mb-6 flex items-center justify-between">
         <h3 className="font-semibold text-lg">활동 기록</h3>
