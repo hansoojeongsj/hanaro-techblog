@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Shadcn 변수 매핑 (구조 유지) */
+  /* Shadcn 변수 매핑 */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -50,7 +50,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  /* Grass Colors */
+  /* Grass Colors (커스텀 잔디 색상) */
   --color-grass-0: var(--grass-0);
   --color-grass-1: var(--grass-1);
   --color-grass-2: var(--grass-2);
@@ -58,121 +58,121 @@
   --color-grass-4: var(--grass-4);
 }
 
-/* 색상 값 교체 (HSL 값) */
+/* 하나은행 테마 적용 */
 :root {
   --font-sans: "Pretendard", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --radius: 0.75rem;
 
-  /* Light Theme Colors (hsl syntax) */
-  --background: hsl(220 20% 97%);
-  --foreground: hsl(220 20% 10%);
+  /* Light Theme */
+  --background: hsl(210 20% 98%);
+  --foreground: hsl(210 25% 15%);
 
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(220 20% 10%);
+  --card-foreground: hsl(210 25% 15%);
 
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(220 20% 10%);
+  --popover-foreground: hsl(210 25% 15%);
 
-  /* Primary: Hana Bank Teal */
-  --primary: hsl(168 76% 42%);
+  /* Primary: Hana Green */
+  --primary: hsl(176 80% 32%);
   --primary-foreground: hsl(0 0% 100%);
 
-  --secondary: hsl(220 14% 96%);
-  --secondary-foreground: hsl(220 20% 10%);
+  --secondary: hsl(210 10% 96%);
+  --secondary-foreground: hsl(210 25% 15%);
 
-  --muted: hsl(220 14% 96%);
-  --muted-foreground: hsl(220 10% 46%);
+  --muted: hsl(210 10% 96%);
+  --muted-foreground: hsl(210 10% 45%);
 
-  --accent: hsl(168 76% 92%);
-  --accent-foreground: hsl(168 76% 25%);
+  --accent: hsl(176 50% 95%);
+  --accent-foreground: hsl(176 80% 32%);
 
   --destructive: hsl(0 84% 60%);
   --destructive-foreground: hsl(0 0% 100%);
 
-  --border: hsl(220 13% 91%);
-  --input: hsl(220 13% 91%);
-  --ring: hsl(168 76% 42%);
+  --border: hsl(210 15% 90%);
+  --input: hsl(210 15% 90%);
+  --ring: hsl(176 80% 32%);
 
   /* Charts */
-  --chart-1: hsl(168 76% 42%);
-  --chart-2: hsl(168 60% 70%);
-  --chart-3: hsl(220 20% 50%);
-  --chart-4: hsl(168 50% 85%);
-  --chart-5: hsl(220 20% 10%);
+  --chart-1: hsl(176 80% 32%);
+  --chart-2: hsl(190 70% 45%);
+  --chart-3: hsl(210 25% 15%);
+  --chart-4: hsl(176 50% 70%);
+  --chart-5: hsl(0 0% 80%);
 
   /* Sidebar */
   --sidebar: hsl(0 0% 100%);
-  --sidebar-foreground: hsl(220 20% 10%);
-  --sidebar-primary: hsl(168 76% 42%);
+  --sidebar-foreground: hsl(210 25% 15%);
+  --sidebar-primary: hsl(176 80% 32%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(168 76% 92%);
-  --sidebar-accent-foreground: hsl(168 76% 25%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(168 76% 42%);
+  --sidebar-accent: hsl(176 50% 95%);
+  --sidebar-accent-foreground: hsl(176 80% 32%);
+  --sidebar-border: hsl(210 15% 90%);
+  --sidebar-ring: hsl(176 80% 32%);
 
   /* Grass Colors (Light) */
-  --grass-0: hsl(220 14% 96%);
-  --grass-1: hsl(168 50% 85%);
-  --grass-2: hsl(168 60% 70%);
-  --grass-3: hsl(168 70% 50%);
-  --grass-4: hsl(168 76% 35%);
+  --grass-0: hsl(210 20% 95%);
+  --grass-1: hsl(176 50% 80%);
+  --grass-2: hsl(176 60% 60%);
+  --grass-3: hsl(176 70% 45%);
+  --grass-4: hsl(176 85% 30%);
 }
 
 .dark {
-  /* Dark Theme Colors */
-  --background: hsl(220 25% 8%);
-  --foreground: hsl(220 15% 95%);
+  /* Dark Theme */
+  --background: hsl(215 25% 10%);
+  --foreground: hsl(210 20% 96%);
 
-  --card: hsl(220 25% 11%);
-  --card-foreground: hsl(220 15% 95%);
+  --card: hsl(215 25% 13%);
+  --card-foreground: hsl(210 20% 96%);
 
-  --popover: hsl(220 25% 11%);
-  --popover-foreground: hsl(220 15% 95%);
+  --popover: hsl(215 25% 13%);
+  --popover-foreground: hsl(210 20% 96%);
 
   /* Primary Dark */
-  --primary: hsl(168 76% 50%);
-  --primary-foreground: hsl(220 25% 8%);
+  --primary: hsl(176 70% 45%);
+  --primary-foreground: hsl(215 25% 10%);
 
-  --secondary: hsl(220 20% 16%);
-  --secondary-foreground: hsl(220 15% 95%);
+  --secondary: hsl(215 20% 18%);
+  --secondary-foreground: hsl(210 20% 96%);
 
-  --muted: hsl(220 20% 16%);
-  --muted-foreground: hsl(220 15% 60%);
+  --muted: hsl(215 20% 18%);
+  --muted-foreground: hsl(215 15% 65%);
 
-  --accent: hsl(168 50% 20%);
-  --accent-foreground: hsl(168 76% 70%);
+  --accent: hsl(176 50% 20%);
+  --accent-foreground: hsl(176 70% 80%);
 
-  --destructive: hsl(0 72% 50%);
+  --destructive: hsl(0 62% 30%);
   --destructive-foreground: hsl(0 0% 100%);
 
-  --border: hsl(220 20% 18%);
-  --input: hsl(220 20% 18%);
-  --ring: hsl(168 76% 50%);
+  --border: hsl(215 20% 20%);
+  --input: hsl(215 20% 20%);
+  --ring: hsl(176 70% 45%);
 
   /* Charts Dark */
-  --chart-1: hsl(168 76% 50%);
-  --chart-2: hsl(168 60% 45%);
-  --chart-3: hsl(220 20% 50%);
-  --chart-4: hsl(168 50% 25%);
-  --chart-5: hsl(220 20% 80%);
+  --chart-1: hsl(176 70% 45%);
+  --chart-2: hsl(190 60% 55%);
+  --chart-3: hsl(215 20% 60%);
+  --chart-4: hsl(176 40% 30%);
+  --chart-5: hsl(215 20% 80%);
 
   /* Sidebar Dark */
-  --sidebar: hsl(220 25% 11%);
-  --sidebar-foreground: hsl(220 15% 95%);
-  --sidebar-primary: hsl(168 76% 50%);
-  --sidebar-primary-foreground: hsl(220 25% 8%);
-  --sidebar-accent: hsl(168 50% 20%);
-  --sidebar-accent-foreground: hsl(168 76% 70%);
-  --sidebar-border: hsl(220 20% 18%);
-  --sidebar-ring: hsl(168 76% 50%);
+  --sidebar: hsl(215 25% 13%);
+  --sidebar-foreground: hsl(210 20% 96%);
+  --sidebar-primary: hsl(176 70% 45%);
+  --sidebar-primary-foreground: hsl(215 25% 10%);
+  --sidebar-accent: hsl(176 50% 20%);
+  --sidebar-accent-foreground: hsl(176 70% 80%);
+  --sidebar-border: hsl(215 20% 20%);
+  --sidebar-ring: hsl(176 70% 45%);
 
   /* Grass Colors (Dark) */
-  --grass-0: hsl(220 20% 14%);
-  --grass-1: hsl(168 40% 25%);
-  --grass-2: hsl(168 50% 35%);
-  --grass-3: hsl(168 60% 45%);
-  --grass-4: hsl(168 76% 55%);
+  --grass-0: hsl(215 20% 16%);
+  --grass-1: hsl(176 40% 25%);
+  --grass-2: hsl(176 50% 35%);
+  --grass-3: hsl(176 60% 45%);
+  --grass-4: hsl(176 75% 55%);
 }
 
 @layer base {
@@ -192,19 +192,20 @@
   }
 }
 
-/* 애니메이션 및 유틸리티 추가 */
 @layer components {
+  /* 잔디밭 셀 스타일 */
   .grass-cell {
-    @apply w-3 h-3 rounded-sm transition-all duration-200;
+    @apply w-3 h-3 rounded-sm transition-all duration-200 hover:scale-110;
   }
+
   .category-badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors;
+    @apply inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/70;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-[hsl(190,70%,45%)];
   }
 
   .animate-fade-in {

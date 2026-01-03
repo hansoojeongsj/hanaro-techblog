@@ -50,9 +50,13 @@ export default function HomePage() {
       </section>
 
       {/* Grass Calendar */}
-      <section className="bg-muted/30 pb-8">
+      <section className="bg-muted/30 py-8">
         <div className="container mx-auto px-4">
-          <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <div
+            className="flex animate-slide-up justify-center"
+            style={{ animationDelay: '0.1s' }}
+          >
+            {' '}
             <GrassCalendar data={grassData} />
           </div>
         </div>
