@@ -2,10 +2,15 @@
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import type * as React from 'react';
+import { Suspense } from 'react';
 
 export function ThemeProvider({
   children,
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+  return (
+    <Suspense fallback={null}>
+      <NextThemesProvider {...props}>{children}</NextThemesProvider>
+    </Suspense>
+  );
 }

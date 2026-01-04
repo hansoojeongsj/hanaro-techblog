@@ -1,6 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { PostCard } from '@/components/blog/PostCard'; // 이미 있는 컴포넌트
+import { PostCard } from '@/components/blog/PostCard';
 import { Button } from '@/components/ui/button';
 import { categories, posts } from '@/data/mockData';
 
