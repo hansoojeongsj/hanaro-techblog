@@ -65,7 +65,7 @@ export function PostTab() {
             className="pl-10"
           />
         </div>
-        <Button onClick={() => router.push('/admin/write')}>
+        <Button onClick={() => router.push('/admin/posts/write')}>
           <Plus className="mr-2 h-4 w-4" /> 새 글 작성
         </Button>
       </div>

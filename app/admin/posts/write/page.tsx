@@ -47,12 +47,13 @@ export default function WritePage() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/posts">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <h1 className="font-bold text-2xl">새 글 작성</h1>
+            <Link
+              href="/posts"
+              className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              전체 글 목록으로
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <Button

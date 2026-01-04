@@ -1,6 +1,16 @@
 'use client';
 
-import { ArrowLeft, Calendar, Clock, Heart, MessageCircle } from 'lucide-react';
+// 1. 아이콘 추가 (MoreVertical, Pencil, Trash2)
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Heart,
+  MessageCircle,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
 import Link from 'next/link';
 import { use, useState } from 'react';
 import { toast } from 'sonner';
@@ -9,6 +19,13 @@ import { CategoryBadge } from '@/components/blog/CategoryBadge';
 import { CommentList } from '@/components/posts/CommentList';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+// 2. 드롭다운 메뉴 컴포넌트 import (shadcn/ui)
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { categories, posts, users } from '@/data/mockData';
 
@@ -24,7 +41,6 @@ interface PageProps {
 
 export default function PostDetailPage({ params }: PageProps) {
   const { id } = use(params);
-
   const [isLiked, setIsLiked] = useState(false);
 
   const post = posts.find((p) => p.id === id);
@@ -43,13 +59,16 @@ export default function PostDetailPage({ params }: PageProps) {
 
   const handleLike = () => {
     setIsLiked(!isLiked);
-    if (!isLiked) {
-      toast('좋아요!', {
-        description: '이 글을 좋아합니다.',
-      });
-    } else {
-      toast('좋아요 취소', {
-        description: '좋아요를 취소했습니다.',
+    toast(isLiked ? '좋아요 취소' : '좋아요!', {
+      description: isLiked ? '좋아요를 취소했습니다.' : '이 글을 좋아합니다.',
+    });
+  };
+
+  // 3. 퍼블리싱용 삭제 핸들러 (기능은 없고 알림만)
+  const handleDelete = () => {
+    if (confirm('정말 삭제하시겠습니까?')) {
+      toast.success('삭제되었습니다', {
+        description: '게시글이 목록에서 삭제되었습니다.',
       });
     }
   };
@@ -67,15 +86,49 @@ export default function PostDetailPage({ params }: PageProps) {
 
   return (
     <article className="container mx-auto max-w-4xl px-4 py-12">
-      <Link
-        href="/posts"
-        className="mb-8 inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        목록으로
-      </Link>
+      {/* 4. 상단 네비게이션 영역 수정 (Flex 적용) */}
+      <div className="mb-8 flex items-center justify-between">
+        <Link
+          href="/posts"
+          className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          목록으로
+        </Link>
+
+        {/* ✨ 수정/삭제 드롭다운 메뉴 */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <MoreVertical className="h-5 w-5" />
+              <span className="sr-only">메뉴 열기</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {/* 수정하기 링크: 제안하신 쿼리 스트링 방식 적용 */}
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link
+                href={`/admin/posts/edit?id=${id}`}
+                className="flex w-full items-center"
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                수정하기
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={handleDelete}
+              className="cursor-pointer text-destructive focus:text-destructive"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              삭제하기
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       <header className="mb-8 animate-fade-in">
+        {/* ... (기존 헤더 내용 유지) ... */}
         {category && (
           <div className="mb-4">
             <CategoryBadge category={category} size="md" />
@@ -111,12 +164,12 @@ export default function PostDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* 본문 렌더링 */}
+      {/* ... (이하 본문 및 댓글 영역 기존 코드 유지) ... */}
       <div className="prose prose-lg dark:prose-invert mb-12 max-w-none animate-slide-up">
         <div className="rounded-xl border border-border bg-card p-8">
           {post.content.split('\n').map((paragraph, idx) => {
+            // ... 기존 렌더링 로직 ...
             const key = `p-${idx}`;
-
             if (paragraph.startsWith('```')) return null;
             if (paragraph.startsWith('## ')) {
               return (
@@ -133,7 +186,6 @@ export default function PostDetailPage({ params }: PageProps) {
               );
             }
             if (paragraph.trim() === '') return <br key={key} />;
-
             return (
               <p key={key} className="mb-4 text-foreground/90 leading-relaxed">
                 {paragraph}
@@ -144,33 +196,24 @@ export default function PostDetailPage({ params }: PageProps) {
       </div>
 
       <div className="mb-12 flex items-center justify-between border-border border-y py-6">
+        {/* ... (좋아요/댓글 버튼 기존 코드 유지) ... */}
         <div className="flex items-center gap-4">
           <Button
             variant={'outline'}
             size="lg"
             onClick={handleLike}
-            className={`gap-2 ${
-              isLiked
-                ? 'border-primary/10 bg-primary/10 text-primary hover:border-primary/10 hover:bg-primary/10 hover:text-primary'
-                : 'hover:border-primary/10 hover:bg-primary/10 hover:text-primary'
-            }`}
+            className={`gap-2 ${isLiked ? 'border-primary/10 bg-primary/10 text-primary' : ''}`}
           >
             <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
             {post.likes + (isLiked ? 1 : 0)}
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="gap-2 hover:border-inherit hover:bg-transparent hover:text-inherit"
-          >
+          <Button variant="outline" size="lg" className="gap-2">
             <MessageCircle className="h-5 w-5" />
-            {/* 댓글 수는 CommentList 내부 데이터와 연동되지 않아 임시로 0 또는 post.comments 사용 */}
             댓글
           </Button>
         </div>
       </div>
 
-      {/* 댓글 섹션 ✨ */}
       <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <CommentList />
       </div>

@@ -69,7 +69,7 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/admin/write">
+              <Link href="/admin/posts/write">
                 <Plus className="h-4 w-4" />새 글 작성
               </Link>
             </DropdownMenuItem>
