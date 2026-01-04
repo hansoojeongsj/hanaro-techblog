@@ -1,7 +1,8 @@
 'use client';
 
-import { Plus, User } from 'lucide-react';
+import { LogIn, LogOut, Plus, User } from 'lucide-react'; // LogIn, LogOut 아이콘 추가
 import Link from 'next/link';
+import { signOut } from 'next-auth/react'; // 로그아웃 기능 추가
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,39 +19,34 @@ interface ProfileToggleProps {
     name: string;
     email: string;
     avatar?: string;
-    role: 'admin' | 'user';
+    role: 'ADMIN' | 'USER';
   };
 }
 
 export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
+  // 로그인 안 했을 때
   if (!isLoggedIn || !user) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
-            <User className="h-5 w-5" />
-            <span className="sr-only">로그인</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link href="/login">로그인이 필요합니다</Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Button variant="outline" size="default" asChild>
+        <Link href="/login" className="flex items-center gap-2">
+          <LogIn className="h-4 w-4" />
+          <span>로그인</span>
+        </Link>
+      </Button>
     );
   }
 
-  // ✅ 로그인 한 경우
+  // 로그인 했을 때
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
             <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback>{user.name[0]}</AvatarFallback>
+            <AvatarFallback className="bg-muted">
+              <User className="h-5 w-5 text-muted-foreground" />
+            </AvatarFallback>
           </Avatar>
-          <span className="sr-only">사용자 메뉴</span>
         </Button>
       </DropdownMenuTrigger>
 
@@ -62,22 +58,30 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
 
         <DropdownMenuSeparator />
 
-        {user.role === 'admin' && (
+        {/* 관리자일 때만 보이는 메뉴 */}
+        {user.role === 'ADMIN' && (
           <>
             <DropdownMenuItem asChild>
-              <Link href="/admin">관리자 페이지</Link>
+              <Link href="/admin" className="cursor-pointer">
+                관리자 대시보드
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+
             <DropdownMenuItem asChild>
-              <Link href="/admin/posts/write">
-                <Plus className="h-4 w-4" />새 글 작성
+              <Link href="/admin/posts/write" className="cursor-pointer">
+                <Plus className="mr-2 h-4 w-4" />새 글 작성
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
 
-        <DropdownMenuItem className="text-destructive">
+        {/* 로그아웃 버튼 (onClick 이벤트 연결) */}
+        <DropdownMenuItem
+          className="cursor-pointer text-destructive focus:text-destructive"
+          onClick={() => signOut({ callbackUrl: '/' })}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
           로그아웃
         </DropdownMenuItem>
       </DropdownMenuContent>

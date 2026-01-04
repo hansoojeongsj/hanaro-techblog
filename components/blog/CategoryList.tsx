@@ -1,26 +1,19 @@
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-// 타입 임시 정의
-type Category = {
+type CategoryWithCount = {
   id: string;
   name: string;
   slug: string;
-  postCount: number;
+  icon: string | null;
+  _count: {
+    posts: number;
+  };
 };
 
 interface CategoryListProps {
-  categories: Category[];
+  categories: CategoryWithCount[];
 }
-
-const categoryIcons: Record<string, string> = {
-  javascript: '🟨',
-  typescript: '🔷',
-  react: '⚛️',
-  nextjs: '▲',
-  css: '🎨',
-  git: '🔀',
-};
 
 export function CategoryList({ categories }: CategoryListProps) {
   return (
@@ -34,15 +27,13 @@ export function CategoryList({ categories }: CategoryListProps) {
               className="group flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-muted"
             >
               <div className="flex items-center gap-3">
-                <span className="text-lg">
-                  {categoryIcons[category.slug] || '📁'}
-                </span>
+                <span className="text-lg">{category.icon || '📁'}</span>
                 <span className="font-medium transition-colors group-hover:text-primary">
                   {category.name}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <span className="text-sm">{category.postCount}</span>
+                <span className="text-sm">{category._count.posts}</span>
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </div>
             </Link>

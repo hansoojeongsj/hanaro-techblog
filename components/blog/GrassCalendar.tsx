@@ -12,8 +12,9 @@ type GrassData = {
   date: string;
   count: number;
   level: number;
+  createdCount?: number;
+  updatedCount?: number;
 };
-
 interface GrassCalendarProps {
   data: GrassData[];
 }
@@ -56,7 +57,7 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     }
     // row-reverse를 쓸 것이므로 데이터는 [오늘, 어제, ..., 1년전] 순서여야 함
     // 하지만 Grid를 그릴 땐 주 단위로 묶어야 하므로 아래 로직에서 처리
-    return result.reverse(); // [1년전, ..., 어제, 오늘] 순서로 다시 뒤집음 (계산 편의상)
+    return result.reverse(); // [1년전, ..., 어제, 오늘] 순서로 다시 뒤집음 (계산 편의~!)
   }, [dataMap]);
 
   // 주 단위 분리
@@ -113,10 +114,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     return labels;
   }, [weeks]);
 
-  // 🎨 [핵심] 렌더링을 위해 weeks 배열을 뒤집습니다.
-  // CSS에서 flex-row-reverse를 쓸 것이기 때문에, 데이터는 [최근 주 ... 과거 주] 순서가 되어야 합니다.
-  // const reversedWeeks = useMemo(() => [...weeks].reverse(), [weeks]);
-
   const getGrassClass = (level: number) => {
     switch (level) {
       case 1:
@@ -171,7 +168,7 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
         </div>
 
         {/* 잔디밭 스크롤 영역 */}
-        {/* ✨ [핵심 변경] flex-row-reverse 적용 */}
+        {/* [핵심 변경] flex-row-reverse 적용 */}
         <div className="scrollbar-hide flex flex-1 flex-row-reverse overflow-x-auto pb-4">
           <div className="relative min-w-fit pr-1">
             {/* 월 라벨 */}
@@ -180,7 +177,7 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
                 <span
                   key={`${month}-${col}`}
                   className="absolute whitespace-nowrap"
-                  // ✨ [핵심 변경] 위치 계산도 반대로 (전체 길이 - 현재 위치)
+                  // 위치 계산도 반대로 (전체 길이 - 현재 위치)
                   // 하지만 row-reverse 컨테이너 안에서는 '왼쪽'이 시각적 '오른쪽'이 될 수 있어
                   // 단순히 렌더링 순서만 바꾸는 게 낫습니다.
                   // 여기서는 reversedWeeks를 쓰므로 라벨 위치도 다시 계산해야 하지만,
@@ -216,11 +213,30 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
                             </TooltipTrigger>
                             {day.date && (
                               <TooltipContent side="top" className="text-xs">
-                                <div className="mb-0.5 font-semibold">
-                                  {day.count} contributions
-                                </div>
-                                <div className="text-muted-foreground">
+                                <div className="mb-1 border-b pb-1 font-semibold">
                                   {formatDate(day.date)}
+                                </div>
+                                <div className="space-y-1">
+                                  <div className="flex items-center justify-between gap-4">
+                                    <span className="text-muted-foreground">
+                                      새 글 작성
+                                    </span>
+                                    <span className="font-medium text-primary">
+                                      {day.createdCount || 0}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between gap-4">
+                                    <span className="text-muted-foreground">
+                                      글 수정
+                                    </span>
+                                    <span className="font-medium text-accent-foreground">
+                                      {day.updatedCount || 0}
+                                    </span>
+                                  </div>
+                                  <div className="mt-1 flex items-center justify-between border-t pt-1 font-bold">
+                                    <span>총 활동</span>
+                                    <span>{day.count}</span>
+                                  </div>
                                 </div>
                               </TooltipContent>
                             )}

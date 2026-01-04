@@ -11,29 +11,28 @@ import {
 } from '@/components/ui/card';
 import { CategoryBadge } from './CategoryBadge';
 
-// 임시 타입 정의
-type Post = {
-  id: string;
+export type PostCardData = {
+  id: string | number;
   title: string;
   excerpt: string;
-  categoryId: string;
   createdAt: Date;
-  updatedAt: Date;
-  authorId: string;
+  writerId: string | number;
+  writer: string;
   likes: number;
   commentCount: number;
 };
 
-type Category = {
-  id: string;
+export type CategoryData = {
+  id: string | number;
   name: string;
   slug: string;
-  postCount: number;
+  color?: string | null;
+  icon?: string | null;
 };
 
 interface PostCardProps {
-  post: Post;
-  category?: Category;
+  post: PostCardData;
+  category?: CategoryData;
 }
 
 export function PostCard({ post, category }: PostCardProps) {
@@ -46,60 +45,57 @@ export function PostCard({ post, category }: PostCardProps) {
   };
 
   return (
-    // Card: 전체 감싸기 (article 대신 사용)
-    // 기존 hover나 transition은 그대로 className에
     <Card className="group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-      {/* 카드 전체 클릭 링크 (absolute position) */}
       <Link href={`/posts/${post.id}`} className="absolute inset-0 z-10">
         <span className="sr-only">상세보기</span>
       </Link>
 
-      {/* CardHeader: 카테고리, 날짜, 제목 */}
       <CardHeader>
-        {/* 카테고리 & 날짜 (제목 위쪽 메타데이터) */}
         <div className="mb-2 flex items-center justify-between">
           {category ? (
             <div className="relative z-20">
-              <CategoryBadge category={category} size="sm" />
+              <CategoryBadge
+                category={{
+                  ...category,
+                  id: String(category.id),
+                  postCount: 0,
+                }}
+                size="sm"
+              />
             </div>
           ) : (
-            <div /> /* 공간 채우기용 */
+            <div />
           )}
-          <div className="flex items-center gap-1 text-muted-foreground text-xs">
-            <Calendar className="h-3 w-3" />
+          <div className="flex items-center gap-1 text-muted-foreground text-xs leading-none">
+            <Calendar className="relative top-px h-3 w-3" />
             <span>{formatDate(post.createdAt)}</span>
           </div>
         </div>
 
-        {/* 제목 (CardTitle) */}
         <CardTitle className="line-clamp-2 text-lg transition-colors group-hover:text-primary">
           {post.title}
         </CardTitle>
       </CardHeader>
 
-      {/* CardContent 내용 요약 */}
       <CardContent className="flex-1">
-        {/* 요약글 (CardDescription) */}
         <CardDescription className="line-clamp-2">
           {post.excerpt}
         </CardDescription>
       </CardContent>
 
-      {/* CardFooter: 작성자 및 통계 (하단 고정) */}
       <CardFooter className="border-t pt-4">
         <div className="flex w-full items-center justify-between">
-          {/* Author */}
           <div className="relative z-20 flex items-center gap-2">
             <Avatar className="h-6 w-6">
+              {/* writerId를 사용하여 아바타 생성 */}
               <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`}
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.writerId}`}
               />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
-            <span className="text-muted-foreground text-xs">작성자</span>
+            <span className="text-muted-foreground text-xs">{post.writer}</span>
           </div>
 
-          {/* Stats */}
           <div className="flex items-center gap-4 text-muted-foreground text-xs">
             <div className="flex items-center gap-1">
               <Heart className="h-3.5 w-3.5" />

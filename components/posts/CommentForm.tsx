@@ -25,8 +25,8 @@ export function CommentForm({
     e.preventDefault();
     if (!content.trim()) return;
 
-    onSubmit(content); // 부모 함수 호출
-    setContent(''); // 입력창 초기화
+    onSubmit(content);
+    setContent('');
   };
 
   return (

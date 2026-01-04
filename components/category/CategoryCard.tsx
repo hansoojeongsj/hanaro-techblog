@@ -9,21 +9,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-// 임시 타입 정의
 type Category = {
   id: string;
   name: string;
   slug: string;
   postCount: number;
-};
-
-const categoryIcons: Record<string, string> = {
-  javascript: '🟨',
-  typescript: '🔷',
-  react: '⚛️',
-  nextjs: '▲',
-  css: '🎨',
-  git: '🔀',
+  icon?: string | null;
 };
 
 interface CategoryCardProps {
@@ -43,9 +34,7 @@ export function CategoryCard({
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-3xl">
-                {categoryIcons[category.slug] || '📁'}
-              </span>
+              <span className="text-3xl">{category.icon || '📁'}</span>
               <div>
                 <CardTitle className="text-xl transition-colors group-hover:text-primary">
                   {category.name}
@@ -61,10 +50,10 @@ export function CategoryCard({
         </CardHeader>
 
         <CardContent className="flex-1">
-          <CardDescription>{categoryDescriptions}</CardDescription>
+          <CardDescription>{categoryDescriptions || ''}</CardDescription>
         </CardContent>
 
-        {latestPostTitle && (
+        {latestPostTitle ? (
           <CardFooter className="mt-auto border-t bg-muted/5 pt-4">
             <div className="w-full">
               <p className="mb-1 text-muted-foreground text-xs">최신 글</p>
@@ -72,6 +61,12 @@ export function CategoryCard({
                 {latestPostTitle}
               </p>
             </div>
+          </CardFooter>
+        ) : (
+          <CardFooter className="mt-auto border-t bg-muted/5 pt-4 opacity-50">
+            <p className="text-muted-foreground text-xs">
+              아직 작성된 글이 없습니다.
+            </p>
           </CardFooter>
         )}
       </Card>
