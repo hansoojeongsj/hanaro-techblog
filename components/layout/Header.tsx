@@ -27,7 +27,7 @@ export default function Header({ isLoggedIn = false, user }: HeaderProps) {
     { href: '/', label: '홈' },
     { href: '/categories', label: '카테고리' },
     { href: '/posts', label: '전체 글' },
-  ];
+  ] as const;
 
   const isActive = (path: string) => pathname === path;
 
