@@ -189,6 +189,7 @@ export default function SignupPage() {
             <Link
               href="/login"
               className="font-medium text-primary hover:underline"
+              prefetch={false}
             >
               로그인
             </Link>

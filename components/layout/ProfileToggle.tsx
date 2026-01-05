@@ -42,7 +42,11 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
   if (!isLoggedIn || !user) {
     return (
       <Button variant="outline" size="default" asChild>
-        <Link href="/login" className="flex items-center gap-2">
+        <Link
+          href="/login"
+          className="flex items-center gap-2"
+          prefetch={false}
+        >
           <LogIn className="h-4 w-4" />
           <span>로그인</span>
         </Link>
@@ -94,7 +98,7 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
           {user.role === 'ADMIN' && (
             <>
               <DropdownMenuItem asChild>
-                <Link href="/admin" className="cursor-pointer">
+                <Link href="/admin" className="cursor-pointer" prefetch={false}>
                   관리자 대시보드
                 </Link>
               </DropdownMenuItem>

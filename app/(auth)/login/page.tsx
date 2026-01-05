@@ -133,6 +133,7 @@ export default function LoginPage() {
             <Link
               href="/signup"
               className="font-medium text-primary hover:underline"
+              prefetch={false}
             >
               회원가입
             </Link>
