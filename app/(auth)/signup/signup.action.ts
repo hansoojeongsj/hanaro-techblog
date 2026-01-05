@@ -10,10 +10,9 @@ export type SignUpState = {
 };
 
 export async function signUp(
-  _prevState: SignUpState, // 타입 적용 + 안 쓰는 변수는 _ 붙이기
+  _prevState: SignUpState,
   formData: FormData,
 ): Promise<SignUpState> {
-  // 리턴 타입
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -22,10 +21,32 @@ export async function signUp(
     return { type: 'error', message: '모든 항목을 입력해주세요.' };
   }
 
-  // 이메일 중복 확인
-  const exists = await prisma.user.findUnique({ where: { email } });
+  // 이메일 중복 확인 (탈퇴하지 않은 활동 중인 유저만 확인)
+  const exists = await prisma.user.findFirst({
+    where: {
+      email,
+      isDeleted: false,
+    },
+  });
+
   if (exists) {
-    return { type: 'error', message: '이미 가입된 이메일입니다.' };
+    return { type: 'error', message: '이미 사용 중인 이메일입니다.' };
+  }
+
+  // 탈퇴 대기 중인 이메일인지 확인 (유예 기간 7일 체크)
+  const deletedUser = await prisma.user.findFirst({
+    where: {
+      email,
+      isDeleted: true,
+    },
+  });
+
+  if (deletedUser) {
+    return {
+      type: 'error',
+      message:
+        '탈퇴 처리 중인 이메일입니다. 탈퇴 신청 7일 이후에 다시 가입하실 수 있습니다.',
+    };
   }
 
   // 비밀번호 해싱

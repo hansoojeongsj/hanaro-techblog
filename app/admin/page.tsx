@@ -6,6 +6,7 @@ import { UserTab } from '@/components/admin/UserTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { anonymizeOldUsersAction } from './admin.action';
 
 export default async function AdminPage({
   searchParams,
@@ -20,7 +21,6 @@ export default async function AdminPage({
 }) {
   const session = await auth();
   if (session?.user?.role !== 'ADMIN') return <div>권한이 없습니다.</div>;
-
   const params = await searchParams;
   const activeTab = params.tab || 'users';
   const searchTerm = params.search || ''; // 검색어 추출
@@ -126,6 +126,8 @@ export default async function AdminPage({
       />
     );
   }
+
+  await anonymizeOldUsersAction();
 
   return (
     <div className="container mx-auto px-4 py-12">

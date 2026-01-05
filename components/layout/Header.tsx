@@ -12,6 +12,7 @@ import { ProfileToggle } from './ProfileToggle';
 interface HeaderProps {
   isLoggedIn?: boolean;
   user?: {
+    id: string;
     name: string;
     email: string;
     avatar?: string;
@@ -65,7 +66,6 @@ export default function Header({ isLoggedIn = false, user }: HeaderProps) {
           <div className="ml-auto flex items-center gap-2">
             <ModeToggle />
             <ProfileToggle isLoggedIn={isLoggedIn} user={user} />
-
             <Button
               variant="ghost"
               size="icon"

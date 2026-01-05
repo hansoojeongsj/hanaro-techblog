@@ -66,14 +66,16 @@ export default async function PostDetailPage({ params }: PageProps) {
     writerId: c.writerId,
     author: {
       name: c.writer.name,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.writer.name}`,
+      avatar: c.writer.image || undefined,
     },
     content: c.content,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
     parentId: c.parentId ? String(c.parentId) : null,
-    isDeleted: c.isDeleted,
+    isWriterDeleted: c.writer.isDeleted,
   }));
+
+  const isWriterDeleted = post.writer.isDeleted;
 
   const likesCount = post._count.postLikes;
   const isLiked = post.postLikes.length > 0;
@@ -93,7 +95,7 @@ export default async function PostDetailPage({ params }: PageProps) {
       </div>
 
       <header className="mb-8 animate-fade-in">
-        {post.category && (
+        {!isWriterDeleted && post.category && (
           <div className="mb-4">
             <CategoryBadge
               category={{
@@ -105,20 +107,24 @@ export default async function PostDetailPage({ params }: PageProps) {
             />
           </div>
         )}
-        <h1 className="mb-4 font-bold text-3xl md:text-4xl">{post.title}</h1>
+        <h1 className="mb-4 break-all font-bold text-3xl md:text-4xl">
+          {isWriterDeleted ? '삭제된 게시글입니다' : post.title}
+        </h1>
 
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={post.writer.image || undefined}
+                src={
+                  isWriterDeleted ? undefined : post.writer.image || undefined
+                }
                 alt={post.writer.name}
               />
               <AvatarFallback className="bg-muted">
                 <User className="h-3 w-3 text-muted-foreground" />
               </AvatarFallback>
             </Avatar>
-            <span>{post.writer.name}</span>
+            <span>{isWriterDeleted ? '탈퇴한 사용자' : post.writer.name}</span>
           </div>
 
           <Separator orientation="vertical" className="h-4" />
@@ -141,31 +147,40 @@ export default async function PostDetailPage({ params }: PageProps) {
       </header>
 
       <div className="prose prose-lg dark:prose-invert mb-12 max-w-none animate-slide-up">
-        <div className="rounded-xl border border-border bg-card p-8">
-          {post.content.split('\n').map((paragraph, idx) => {
-            const key = `p-${idx}`;
-            if (paragraph.startsWith('```')) return null;
-            if (paragraph.startsWith('## ')) {
+        <div className="break-all rounded-xl border border-border bg-card p-8">
+          {isWriterDeleted ? (
+            <p className="text-muted-foreground italic">
+              삭제된 게시글의 내용은 볼 수 없습니다.
+            </p>
+          ) : (
+            post.content.split('\n').map((paragraph, idx) => {
+              const key = `p-${idx}`;
+              if (paragraph.startsWith('```')) return null;
+              if (paragraph.startsWith('## ')) {
+                return (
+                  <h2 key={key} className="mt-6 mb-3 font-bold text-xl">
+                    {paragraph.replace('## ', '')}
+                  </h2>
+                );
+              }
+              if (paragraph.startsWith('# ')) {
+                return (
+                  <h1 key={key} className="mt-8 mb-4 font-bold text-2xl">
+                    {paragraph.replace('# ', '')}
+                  </h1>
+                );
+              }
+              if (paragraph.trim() === '') return <br key={key} />;
               return (
-                <h2 key={key} className="mt-6 mb-3 font-bold text-xl">
-                  {paragraph.replace('## ', '')}
-                </h2>
+                <p
+                  key={key}
+                  className="mb-4 text-foreground/90 leading-relaxed"
+                >
+                  {paragraph}
+                </p>
               );
-            }
-            if (paragraph.startsWith('# ')) {
-              return (
-                <h1 key={key} className="mt-8 mb-4 font-bold text-2xl">
-                  {paragraph.replace('# ', '')}
-                </h1>
-              );
-            }
-            if (paragraph.trim() === '') return <br key={key} />;
-            return (
-              <p key={key} className="mb-4 text-foreground/90 leading-relaxed">
-                {paragraph}
-              </p>
-            );
-          })}
+            })
+          )}
         </div>
       </div>
 
@@ -191,6 +206,8 @@ export default async function PostDetailPage({ params }: PageProps) {
           postId={postId}
           currentUserId={Number(session?.user?.id)}
           isAdmin={session?.user?.role === 'ADMIN'}
+          userImage={session?.user?.image}
+          userName={session?.user?.name || '사용자'}
         />
       </div>
     </article>

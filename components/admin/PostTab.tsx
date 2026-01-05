@@ -153,7 +153,7 @@ export function PostTab({
               posts.map((post) => (
                 <TableRow key={post.id}>
                   <TableCell className="max-w-xs truncate font-medium">
-                    {post.isDeleted ? (
+                    {post.isDeleted || post.writer.isDeleted ? (
                       <span className="text-destructive/50 italic">
                         삭제된 게시글
                       </span>
@@ -168,7 +168,7 @@ export function PostTab({
                   </TableCell>
 
                   <TableCell>
-                    {!post.isDeleted && (
+                    {!post.isDeleted && !post.writer.isDeleted && (
                       <Badge variant="secondary">
                         {post.category?.name || '미지정'}
                       </Badge>

@@ -19,7 +19,7 @@ export function CommentForm({
   onSubmit,
   replyToId,
   onCancelReply,
-  placeholder = '댓글을 작성하세요...',
+  placeholder = '댓글을 작성하세요.',
   userImage,
   userName = '사용자',
 }: CommentFormProps) {

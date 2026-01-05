@@ -90,7 +90,7 @@ export function UserTab({
     debouncedSearch(value);
   };
 
-  // 서버에서 받은 데이터를 그대로 사용 (클라이언트 filter 제거)
+  // 서버에서 받은 데이터를 그대로 사용
   const users = initialUsers;
 
   const handleAction = async (id: number, type: 'delete' | 'restore') => {
@@ -203,7 +203,17 @@ export function UserTab({
                   </TableCell>
                   <TableCell>
                     {user.isDeleted ? (
-                      <Badge variant="destructive">탈퇴 유예</Badge>
+                      <Badge
+                        variant={
+                          user.email.startsWith('deleted_')
+                            ? 'outline'
+                            : 'secondary'
+                        }
+                      >
+                        {user.email.startsWith('deleted_')
+                          ? '탈퇴 완료'
+                          : '탈퇴 유예'}
+                      </Badge>
                     ) : (
                       <Badge
                         variant={
@@ -216,12 +226,16 @@ export function UserTab({
                   </TableCell>
                   <TableCell className="text-muted-foreground text-xs">
                     {user.isDeleted && user.deletedAt ? (
-                      <span className="text-destructive">
-                        {getDeletionDeadline(user.deletedAt)} 삭제 예정
-                      </span>
+                      user.email.startsWith('deleted_') ? (
+                        <span>{formatDate(user.deletedAt)} 탈퇴됨</span>
+                      ) : (
+                        <span className="text-destructive">
+                          {getDeletionDeadline(user.deletedAt)} 삭제 예정
+                        </span>
+                      )
                     ) : (
                       formatDate(user.createdAt)
-                    )}
+                    )}{' '}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -240,11 +254,20 @@ export function UserTab({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         {user.isDeleted ? (
-                          <DropdownMenuItem
-                            onClick={() => handleAction(user.id, 'restore')}
-                          >
-                            <RotateCcw className="mr-2 h-4 w-4" /> 복구하기
-                          </DropdownMenuItem>
+                          !user.email.startsWith('deleted_') ? (
+                            <DropdownMenuItem
+                              onClick={() => handleAction(user.id, 'restore')}
+                            >
+                              <RotateCcw className="mr-2 h-4 w-4" /> 복구하기
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              disabled
+                              className="text-muted-foreground"
+                            >
+                              정보 파기 완료 (복구 불가)
+                            </DropdownMenuItem>
+                          )
                         ) : (
                           <>
                             <DropdownMenuItem

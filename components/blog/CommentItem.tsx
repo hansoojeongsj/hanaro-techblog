@@ -84,7 +84,7 @@ export function CommentItem({
   };
 
   const handleStartEdit = () => {
-    if (onEditStart) onEditStart(); // 부모의 답글 상태를 끄기 위해 호출
+    if (onEditStart) onEditStart();
     setIsEditing(true);
   };
 
@@ -178,7 +178,7 @@ export function CommentItem({
               </div>
             </div>
           ) : (
-            <p className="whitespace-pre-wrap text-foreground/90 leading-relaxed">
+            <p className="whitespace-pre-wrap break-all text-foreground/90 leading-relaxed">
               {comment.content}
             </p>
           )}

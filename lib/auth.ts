@@ -35,6 +35,12 @@ export const {
           throw new Error('가입되지 않은 이메일입니다.');
         }
 
+        if (user.isDeleted) {
+          throw new Error(
+            '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.',
+          );
+        }
+
         if (!user.passwd) {
           throw new Error('소셜 로그인으로 가입된 계정입니다.');
         }

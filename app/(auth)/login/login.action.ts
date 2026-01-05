@@ -1,3 +1,5 @@
+// app/(auth)/login/login.action.ts
+
 'use server';
 
 import { AuthError } from 'next-auth';
@@ -13,12 +15,9 @@ export async function loginAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    // formData에서 값 꺼내기
     const email = formData.get('email');
-    const passwd = formData.get('passwd'); // Input name=passwd 확인
+    const passwd = formData.get('passwd');
 
-    // signIn 함수에 객체로 전달
-    // formData를 통째로 넘기지 말고, 필요한 것만
     await signIn('credentials', {
       email,
       passwd,
@@ -28,20 +27,24 @@ export async function loginAction(
     return { message: '로그인 성공', type: 'success' };
   } catch (error) {
     if (error instanceof AuthError) {
+      const errorMessage = error.cause?.err?.message || '';
+
+      if (errorMessage.includes('탈퇴 처리 중인 계정')) {
+        return {
+          message: errorMessage,
+          type: 'error',
+        };
+      }
+
       switch (error.type) {
         case 'CredentialsSignin':
           return {
             message: '이메일 또는 비밀번호가 일치하지 않습니다.',
             type: 'error',
           };
-        case 'CallbackRouteError':
-          return {
-            message: '로그인 중 오류가 발생했습니다.',
-            type: 'error',
-          };
         default:
           return {
-            message: '알 수 없는 오류가 발생했습니다.',
+            message: '로그인 중 오류가 발생했습니다.',
             type: 'error',
           };
       }

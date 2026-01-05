@@ -15,6 +15,8 @@ interface CommentListProps {
   postId: number;
   currentUserId: number;
   isAdmin: boolean;
+  userImage?: string | null;
+  userName?: string;
 }
 
 export function CommentList({
@@ -22,6 +24,8 @@ export function CommentList({
   postId,
   currentUserId,
   isAdmin,
+  userImage,
+  userName,
 }: CommentListProps) {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [replyToId, setReplyToId] = useState<string | null>(null);
@@ -84,6 +88,8 @@ export function CommentList({
         onSubmit={handleAddComment}
         replyToId={replyToId}
         onCancelReply={() => setReplyToId(null)}
+        userImage={userImage}
+        userName={userName}
       />
 
       <div className="space-y-6">

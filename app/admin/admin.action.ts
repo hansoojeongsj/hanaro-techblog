@@ -5,12 +5,11 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 /**
- * 유저 삭제 액션 (소프트 삭제)
+ * 유저 탈퇴 액션 (7일 유예 기간 시작)
  */
 export async function withdrawUserAction(userId: number) {
   try {
     const session = await auth();
-    // 관리자거나 본인인 경우
     if (
       !session ||
       (session.user.role !== 'ADMIN' && Number(session.user.id) !== userId)
@@ -19,6 +18,7 @@ export async function withdrawUserAction(userId: number) {
     }
 
     await prisma.$transaction([
+      // 유저 상태 변경 (Soft Delete)
       prisma.user.update({
         where: { id: userId },
         data: {
@@ -26,22 +26,62 @@ export async function withdrawUserAction(userId: number) {
           deletedAt: new Date(),
         },
       }),
-      prisma.post.updateMany({
-        where: { writerId: userId },
-        data: { isDeleted: true },
-      }),
-      prisma.comment.updateMany({
-        where: { writerId: userId },
-        data: { isDeleted: true },
+      // 해당 유저의 모든 세션 삭제 (즉시 로그아웃)
+      prisma.session.deleteMany({
+        where: { userId: userId },
       }),
     ]);
 
-    return { success: true, message: '탈퇴 처리가 완료되었습니다.' };
+    revalidatePath('/admin');
+    return {
+      success: true,
+      message: '탈퇴 유예 처리가 완료되었습니다. (7일 후 정보 파기)',
+    };
   } catch (error) {
     console.error('유저 삭제 에러:', error);
     return { success: false, message: '탈퇴 처리 중 오류 발생' };
   }
-} /**
+}
+
+/**
+ * 7일 경과 유저 익명화 (영구 탈퇴 및 재가입 허용 처리)
+ */
+export async function anonymizeOldUsersAction() {
+  try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    // 7일이 지났고 아직 익명화되지 않은 유저 조회
+    const targets = await prisma.user.findMany({
+      where: {
+        isDeleted: true,
+        deletedAt: { lte: sevenDaysAgo },
+        NOT: { email: { startsWith: 'deleted_' } },
+      },
+    });
+
+    if (targets.length === 0) return;
+
+    const tasks = targets.map((user) =>
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          name: '탈퇴한 사용자',
+          email: `deleted_${user.id}_${Date.now()}@deleted.com`,
+          passwd: null,
+          image: null,
+          provider: null,
+        },
+      }),
+    );
+
+    await Promise.all(tasks);
+    console.log(`${targets.length}명의 유저 정보가 익명화되었습니다.`);
+  } catch (error) {
+    console.error('익명화 작업 중 에러:', error);
+  }
+}
+
+/**
  * 유저 복구 액션
  */
 export async function restoreUserAction(userId: number) {

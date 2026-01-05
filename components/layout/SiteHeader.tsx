@@ -6,7 +6,8 @@ export default async function SiteHeader() {
 
   const user = session?.user
     ? {
-        name: session.user.name ?? 'User',
+        id: session.user.id,
+        name: session.user.name ?? '',
         email: session.user.email ?? '',
         avatar: session.user.image ?? undefined,
         role: session.user.role as 'ADMIN' | 'USER',

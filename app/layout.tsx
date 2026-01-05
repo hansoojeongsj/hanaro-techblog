@@ -41,7 +41,6 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toaster />
-
             <Suspense
               fallback={
                 <div className="h-16 w-full border-b bg-background/80 backdrop-blur" />
@@ -49,7 +48,6 @@ export default function RootLayout({
             >
               <SiteHeader />
             </Suspense>
-
             <main className="flex-1">{children}</main>
             <Footer />
           </ThemeProvider>

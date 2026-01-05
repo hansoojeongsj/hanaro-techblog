@@ -149,7 +149,7 @@ export function CommentTab({
               comments.map((comment) => (
                 <TableRow key={comment.id}>
                   <TableCell className="max-w-xs truncate">
-                    {comment.isDeleted ? (
+                    {comment.isDeleted || comment.writer.isDeleted ? (
                       <span className="text-destructive/50 italic">
                         삭제된 댓글
                       </span>

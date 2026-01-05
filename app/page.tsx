@@ -12,7 +12,7 @@ import { prisma } from '@/lib/prisma';
 
 export default async function HomePage() {
   cacheLife({
-    stale: 10,
+    stale: 1,
     revalidate: 3600,
   });
 
