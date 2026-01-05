@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { auth } from './lib/auth'; // auth.ts에서 가져오기
+import { auth } from './lib/auth';
 
 export default async function proxy(req: NextRequest) {
   const session = await auth();
