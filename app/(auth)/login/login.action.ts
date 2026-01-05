@@ -52,3 +52,7 @@ export async function loginAction(
 export async function handleGithubLogin() {
   await signIn('github', { redirectTo: '/' });
 }
+
+export async function handleGoogleLogin() {
+  await signIn('google', { redirectTo: '/' });
+}

@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { toast } from 'sonner';
-import { GithubLoginButton } from '@/components/auth/GithubLoginButton';
+import { SocialLoginButton } from '@/components/auth/SocialLoginButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -61,8 +61,9 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="mb-6 space-y-3">
-            <GithubLoginButton />
+          <div className="mb-6 flex-col gap-2 space-y-3">
+            <SocialLoginButton provider="github" />
+            <SocialLoginButton provider="google" />
           </div>
 
           <div className="relative mb-6">
