@@ -67,8 +67,8 @@ export default async function AdminPage({
     const page = Number(params.postPage) || 1;
     const where = searchTerm
       ? {
-          title: { contains: searchTerm },
           isDeleted: false,
+          title: { search: `${searchTerm}*` },
         }
       : {};
 
@@ -97,8 +97,8 @@ export default async function AdminPage({
     const page = Number(params.commentPage) || 1;
     const where = searchTerm
       ? {
-          content: { contains: searchTerm },
           isDeleted: false,
+          content: { search: `${searchTerm}*` },
         }
       : {};
 

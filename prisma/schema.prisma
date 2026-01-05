@@ -63,6 +63,7 @@ model Post {
 
   @@index([writerId], map: "fk_Post_writer")
   @@index([categoryId], map: "fk_Post_category")
+  @@fulltext([title])
   @@fulltext([title, content])
 }
 
@@ -87,6 +88,7 @@ model Comment {
   @@index([writerId], map: "fk_Comment_writer")
   @@index([postId], map: "fk_Comment_post")
   @@index([parentId], map: "fk_Comment_parent")
+  @@fulltext([content])
 }
 
 model PostLike {

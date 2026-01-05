@@ -15,9 +15,18 @@ export type PostListData = {
   category: { id: string; name: string; slug: string };
 };
 
-export async function getAllPosts() {
+export async function getAllPosts(query?: string) {
   const posts = await prisma.post.findMany({
-    where: { isDeleted: false, writer: { isDeleted: false } },
+    where: {
+      isDeleted: false,
+      writer: { isDeleted: false },
+      ...(query && {
+        OR: [
+          { title: { search: `${query}*` } },
+          { content: { search: `${query}*` } },
+        ],
+      }),
+    },
     orderBy: { createdAt: 'desc' },
     include: {
       category: true,
