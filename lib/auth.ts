@@ -63,44 +63,19 @@ export const {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === 'credentials') return true;
-
       if (account?.provider === 'github') {
-        try {
-          const email = user.email;
-          if (!email) return false;
+        const email = user.email;
+        if (!email) return false;
 
-          let dbUser = await prisma.user.findUnique({
-            where: { email },
-          });
+        const dbUser = await prisma.user.findUnique({ where: { email } });
 
-          if (!dbUser) {
-            dbUser = await prisma.user.create({
-              data: {
-                email,
-                name: user.name || 'User',
-                image: user.image,
-                role: 'USER',
-              },
-            });
-          }
-
-          if (dbUser.isDeleted) {
-            throw new Error('탈퇴 처리 중인 계정입니다.');
-          }
-
-          user.id = String(dbUser.id);
-          user.role = dbUser.role;
-
-          return true;
-        } catch (error) {
-          console.error('Social Login Error:', error);
-          return false;
+        if (dbUser?.isDeleted) {
+          throw new Error('DELETED_USER');
         }
+        return true;
       }
       return true;
     },
-
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;

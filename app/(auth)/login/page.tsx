@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff, Mail } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { toast } from 'sonner';
@@ -13,6 +14,10 @@ import { Separator } from '@/components/ui/separator';
 import { type ActionState, loginAction } from './login.action';
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
+  const router = useRouter();
+
   const [state, formAction] = useActionState(loginAction, {
     message: '',
     type: '',
@@ -21,10 +26,25 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (state?.message && state?.type === 'error') {
-      toast.error(state.message);
+    if (error) {
+      const msg =
+        error === 'AccessDenied' || error === 'Callback'
+          ? '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.'
+          : '로그인 중 에러가 발생했습니다.';
+
+      toast.error(msg, { id: 'auth-error' });
+      window.history.replaceState({}, '', window.location.pathname);
     }
-  }, [state]);
+
+    if (state?.message) {
+      if (state.type === 'error') {
+        toast.error(state.message, { id: 'auth-error' });
+      } else if (state.type === 'success') {
+        router.push('/');
+        router.refresh();
+      }
+    }
+  }, [error, state, router]);
 
   const handleForgotPassword = () => {
     toast.info('알림', { description: '추후 업데이트 예정입니다.' });

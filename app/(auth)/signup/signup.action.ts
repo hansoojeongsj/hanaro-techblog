@@ -3,10 +3,9 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 
-// 리턴값의 타입 정의
 export type SignUpState = {
   message: string;
-  type: 'success' | 'error' | ''; // 성공, 에러, 혹은 초기값
+  type: 'success' | 'error' | '';
 };
 
 export async function signUp(
@@ -21,7 +20,6 @@ export async function signUp(
     return { type: 'error', message: '모든 항목을 입력해주세요.' };
   }
 
-  // 이메일 중복 확인 (탈퇴하지 않은 활동 중인 유저만 확인)
   const exists = await prisma.user.findFirst({
     where: {
       email,
@@ -33,7 +31,6 @@ export async function signUp(
     return { type: 'error', message: '이미 사용 중인 이메일입니다.' };
   }
 
-  // 탈퇴 대기 중인 이메일인지 확인 (유예 기간 7일 체크)
   const deletedUser = await prisma.user.findFirst({
     where: {
       email,
@@ -49,10 +46,8 @@ export async function signUp(
     };
   }
 
-  // 비밀번호 해싱
   const hashed = await bcrypt.hash(password, 10);
 
-  // 유저 생성
   await prisma.user.create({
     data: {
       name,

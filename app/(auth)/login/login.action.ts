@@ -16,22 +16,23 @@ export async function loginAction(
     const email = formData.get('email');
     const passwd = formData.get('passwd');
 
-    await signIn('credentials', {
+    const result = await signIn('credentials', {
       email,
       passwd,
-      redirectTo: '/',
+      redirect: false,
     });
+
+    if (result?.error) {
+      return { message: '이메일 또는 비밀번호를 확인해주세요.', type: 'error' };
+    }
 
     return { message: '로그인 성공', type: 'success' };
   } catch (error) {
     if (error instanceof AuthError) {
-      const errorMessage = error.cause?.err?.message || '';
+      const errorMessage = error.cause?.err?.message;
 
-      if (errorMessage.includes('탈퇴 처리 중인 계정')) {
-        return {
-          message: errorMessage,
-          type: 'error',
-        };
+      if (errorMessage) {
+        return { message: errorMessage, type: 'error' };
       }
 
       switch (error.type) {
@@ -41,10 +42,7 @@ export async function loginAction(
             type: 'error',
           };
         default:
-          return {
-            message: '로그인 중 오류가 발생했습니다.',
-            type: 'error',
-          };
+          return { message: '로그인 중 오류가 발생했습니다.', type: 'error' };
       }
     }
     throw error;
