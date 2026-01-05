@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar, Clock, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MessageCircle, User } from 'lucide-react';
 import Link from 'next/link';
 
 import { CategoryBadge } from '@/components/blog/CategoryBadge';
@@ -74,8 +74,8 @@ export default async function PostDetailPage({ params }: PageProps) {
     parentId: c.parentId ? String(c.parentId) : null,
     isDeleted: c.isDeleted,
   }));
+
   const likesCount = post._count.postLikes;
-  // 내가 좋아요를 눌렀는지
   const isLiked = post.postLikes.length > 0;
 
   return (
@@ -89,7 +89,6 @@ export default async function PostDetailPage({ params }: PageProps) {
           목록으로
         </Link>
 
-        {/* 수정/삭제 메뉴 */}
         <PostDetailActions postId={String(post.id)} />
       </div>
 
@@ -112,9 +111,12 @@ export default async function PostDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.writer.name}`}
+                src={post.writer.image || undefined}
+                alt={post.writer.name}
               />
-              <AvatarFallback>{post.writer.name[0]}</AvatarFallback>
+              <AvatarFallback className="bg-muted">
+                <User className="h-3 w-3 text-muted-foreground" />
+              </AvatarFallback>
             </Avatar>
             <span>{post.writer.name}</span>
           </div>
@@ -167,7 +169,7 @@ export default async function PostDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="mb-12 flex items-center justify-between border-border border-y py-6">
+      <div className="mb-12 flex items-center justify-between border-border border-t py-6">
         <div className="flex items-center gap-4">
           <PostLikeButton
             postId={postId}

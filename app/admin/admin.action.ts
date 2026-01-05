@@ -7,32 +7,41 @@ import { prisma } from '@/lib/prisma';
 /**
  * 유저 삭제 액션 (소프트 삭제)
  */
-export async function deleteUserAction(userId: number) {
+export async function withdrawUserAction(userId: number) {
   try {
     const session = await auth();
-    if (session?.user?.role !== 'ADMIN')
-      return { success: false, message: '권한 부족' };
+    // 관리자거나 본인인 경우
+    if (
+      !session ||
+      (session.user.role !== 'ADMIN' && Number(session.user.id) !== userId)
+    ) {
+      return { success: false, message: '권한이 없습니다.' };
+    }
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        isDeleted: true,
-        deletedAt: new Date(),
-      },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          isDeleted: true,
+          deletedAt: new Date(),
+        },
+      }),
+      prisma.post.updateMany({
+        where: { writerId: userId },
+        data: { isDeleted: true },
+      }),
+      prisma.comment.updateMany({
+        where: { writerId: userId },
+        data: { isDeleted: true },
+      }),
+    ]);
 
-    revalidatePath('/admin');
-    return {
-      success: true,
-      message: '회원이 탈퇴 처리되었습니다. (유예 기간 시작)',
-    };
+    return { success: true, message: '탈퇴 처리가 완료되었습니다.' };
   } catch (error) {
     console.error('유저 삭제 에러:', error);
     return { success: false, message: '탈퇴 처리 중 오류 발생' };
   }
-}
-
-/**
+} /**
  * 유저 복구 액션
  */
 export async function restoreUserAction(userId: number) {

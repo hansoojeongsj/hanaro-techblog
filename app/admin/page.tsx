@@ -1,10 +1,8 @@
-import { Shield } from 'lucide-react';
 import Link from 'next/link';
 import { AdminStats } from '@/components/admin/AdminStats';
 import { CommentTab } from '@/components/admin/CommentTab';
 import { PostTab } from '@/components/admin/PostTab';
 import { UserTab } from '@/components/admin/UserTab';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -17,7 +15,7 @@ export default async function AdminPage({
     postPage?: string;
     commentPage?: string;
     tab?: string;
-    search?: string; // 검색어 파라미터 추가
+    search?: string;
   }>;
 }) {
   const session = await auth();
@@ -82,8 +80,8 @@ export default async function AdminPage({
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
-          writer: { select: { name: true } },
-          category: { select: { name: true, color: true } },
+          writer: { select: { name: true, isDeleted: true } },
+          category: { select: { name: true } },
         },
         orderBy: { createdAt: 'desc' },
       }),
@@ -112,8 +110,8 @@ export default async function AdminPage({
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
-          writer: { select: { name: true } },
-          post: { select: { title: true } },
+          writer: { select: { name: true, isDeleted: true } },
+          post: { select: { title: true, isDeleted: true, id: true } },
         },
         orderBy: { createdAt: 'desc' },
       }),
@@ -138,10 +136,6 @@ export default async function AdminPage({
             회원, 게시글, 댓글을 한눈에 관리하세요.
           </p>
         </div>
-        <Badge variant="secondary" className="h-8 gap-2 px-4">
-          <Shield className="h-4 w-4" />
-          관리자 모드
-        </Badge>
       </div>
 
       <AdminStats

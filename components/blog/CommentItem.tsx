@@ -7,6 +7,7 @@ import {
   MoreVertical,
   Reply,
   Trash2,
+  User,
   X,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -30,6 +31,7 @@ export interface CommentType {
   updatedAt?: Date | string;
   isDeleted?: boolean;
   parentId?: string | null;
+  isWriterDeleted?: boolean;
 }
 
 interface CommentItemProps {
@@ -40,6 +42,7 @@ interface CommentItemProps {
   isReply?: boolean;
   currentUserId: number;
   isAdmin: boolean;
+  onEditStart?: () => void;
 }
 
 export function CommentItem({
@@ -50,16 +53,20 @@ export function CommentItem({
   isReply = false,
   currentUserId,
   isAdmin,
+  onEditStart,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
+
+  const isUserMasked = comment.isWriterDeleted;
+  const isContentMasked = comment.isDeleted || comment.isWriterDeleted;
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      hour: '2-digit', // 시간까지 보이면 더 정확하겠죠?
+      hour: '2-digit',
       minute: '2-digit',
     });
   };
@@ -76,6 +83,11 @@ export function CommentItem({
     setIsEditing(false);
   };
 
+  const handleStartEdit = () => {
+    if (onEditStart) onEditStart(); // 부모의 답글 상태를 끄기 위해 호출
+    setIsEditing(true);
+  };
+
   const canManage = isAdmin || Number(comment.writerId) === currentUserId;
   const isUpdated =
     comment.updatedAt &&
@@ -88,13 +100,10 @@ export function CommentItem({
         <CornerDownRight className="mt-2 h-5 w-5 shrink-0 text-muted-foreground/50" />
       )}
 
-      {/* 아바타 처리: 삭제되면 기본 아이콘 표시 */}
       <Avatar className="h-10 w-10 shrink-0">
-        <AvatarImage
-          src={comment.isDeleted ? undefined : comment.author.avatar}
-        />
+        <AvatarImage src={isUserMasked ? undefined : comment.author.avatar} />
         <AvatarFallback>
-          {comment.isDeleted ? '?' : comment.author.name[0]}
+          <User className="h-3 w-3 text-muted-foreground" />
         </AvatarFallback>
       </Avatar>
 
@@ -103,23 +112,29 @@ export function CommentItem({
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span
-                className={cn(comment.isDeleted && 'text-muted-foreground')}
+                className={cn(isUserMasked && 'text-muted-foreground italic')}
               >
-                {comment.isDeleted ? '(알 수 없음)' : comment.author.name}
+                {isUserMasked ? '탈퇴한 사용자' : comment.author.name}
               </span>
-              <span className="text-muted-foreground text-xs">
-                {formatDate(comment.createdAt)}
-              </span>
-              {!comment.isDeleted && isUpdated && comment.updatedAt && (
-                <span className="flex gap-1 text-muted-foreground text-xs before:mr-1 before:content-['•']">
-                  <span>수정: </span>
-                  {formatDate(comment.updatedAt)}
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'text-muted-foreground text-xs',
+                    !isContentMasked && isUpdated && 'hidden sm:inline',
+                  )}
+                >
+                  {formatDate(comment.createdAt)}
                 </span>
-              )}
+                {!isContentMasked && isUpdated && comment.updatedAt && (
+                  <span className="flex items-center text-muted-foreground text-xs before:content-['•'] sm:before:mr-1">
+                    <span className="mr-1 sm:inline">수정:</span>
+                    {formatDate(comment.updatedAt)}
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* canManage가 true일 때만 수정/삭제 메뉴 노출 */}
-            {!comment.isDeleted && !isEditing && canManage && (
+            {!isContentMasked && !isEditing && canManage && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -127,7 +142,7 @@ export function CommentItem({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                  <DropdownMenuItem onClick={handleStartEdit}>
                     <Edit className="mr-2 h-4 w-4" /> 수정
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -142,7 +157,7 @@ export function CommentItem({
           </div>
 
           {/* 내용 처리 */}
-          {comment.isDeleted ? (
+          {isContentMasked ? (
             <span className="text-muted-foreground italic">
               삭제된 댓글입니다
             </span>
@@ -169,8 +184,7 @@ export function CommentItem({
           )}
         </div>
 
-        {/* 답글 버튼 */}
-        {!comment.isDeleted && !isReply && !isEditing && (
+        {!isContentMasked && !isReply && !isEditing && (
           <div className="mt-2">
             <Button
               variant="ghost"

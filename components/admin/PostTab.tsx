@@ -4,13 +4,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Edit,
-  FileX,
   Loader2,
   MoreHorizontal,
   Plus,
   Search,
   Trash2,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -37,8 +37,8 @@ interface PostWithRelation {
   id: number;
   title: string;
   createdAt: Date;
-  writer: { name: string };
-  category: { name: string; color: string | null } | null;
+  writer: { name: string; isDeleted: boolean };
+  category: { name: string } | null;
   isDeleted: boolean;
 }
 
@@ -54,13 +54,13 @@ export function PostTab({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 상태 관리: 입력값만 관리
+  // 입력값만 관리
   const [inputValue, setInputValue] = useState(
     searchParams.get('search') || '',
   );
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
-  // 서버 사이드 디바운스 검색: URL 파라미터 업데이트
+  // 서버 사이드 디바운스 검색
   const debouncedSearch = useMemo(() => {
     let timer: NodeJS.Timeout;
     return (value: string) => {
@@ -82,7 +82,7 @@ export function PostTab({
     debouncedSearch(value);
   };
 
-  // 서버에서 받은 데이터를 그대로 사용 (클라이언트 filter 로직 제거)
+  // 서버에서 받은 데이터를 그대로 사용
   const posts = initialPosts;
 
   const handleDelete = async (id: number) => {
@@ -108,13 +108,23 @@ export function PostTab({
     router.push(`/admin?${params.toString()}`);
   };
 
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    // 월과 일이 한 자리일 경우 앞에 0을 붙여줍니다.
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}/${month}/${day}`;
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="relative mr-2 w-full max-w-sm">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="전체 게시글 제목 검색..."
+            placeholder="제목으로 검색하세요."
             value={inputValue}
             onChange={handleSearch}
             className="pl-10"
@@ -144,11 +154,16 @@ export function PostTab({
                 <TableRow key={post.id}>
                   <TableCell className="max-w-xs truncate font-medium">
                     {post.isDeleted ? (
-                      <span className="text-muted-foreground italic">
-                        삭제된 게시글입니다
+                      <span className="text-destructive/50 italic">
+                        삭제된 게시글
                       </span>
                     ) : (
-                      post.title
+                      <Link
+                        href={`/posts/${post.id}`}
+                        className="transition-colors hover:text-primary hover:underline"
+                      >
+                        {post.title}
+                      </Link>
                     )}
                   </TableCell>
 
@@ -161,10 +176,16 @@ export function PostTab({
                   </TableCell>
 
                   <TableCell className="text-muted-foreground">
-                    {post.writer.name}
+                    {post.writer.isDeleted ? (
+                      <span className="text-destructive/50 italic">
+                        탈퇴한 사용자
+                      </span>
+                    ) : (
+                      post.writer.name
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {new Date(post.createdAt).toLocaleDateString()}
+                    {formatDate(post.createdAt)}
                   </TableCell>
 
                   <TableCell>
@@ -206,10 +227,7 @@ export function PostTab({
               <TableRow>
                 <TableCell colSpan={5} className="h-40 text-center">
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                    <FileX className="h-10 w-10 opacity-20" />
-                    <p className="font-medium text-sm">
-                      검색된 게시글이 없습니다.
-                    </p>
+                    <p className="font-medium text-sm">검색 결과가 없습니다.</p>
                   </div>
                 </TableCell>
               </TableRow>

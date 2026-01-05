@@ -4,11 +4,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  MessageSquareOff,
   MoreHorizontal,
   Search,
   Trash2,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -35,8 +35,15 @@ interface CommentWithRelation {
   content: string;
   isDeleted: boolean;
   createdAt: Date;
-  writer: { name: string };
-  post: { title: string };
+  writer: {
+    name: string;
+    isDeleted: boolean;
+  };
+  post: {
+    title: string;
+    isDeleted: boolean;
+    id: number;
+  };
 }
 
 interface CommentTabProps {
@@ -53,13 +60,13 @@ export function CommentTab({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 상태 관리: 입력값만 관리 (클라이언트 필터용 searchStr 삭제)
+  // 입력값만 관리
   const [inputValue, setInputValue] = useState(
     searchParams.get('search') || '',
   );
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
-  // 서버 사이드 디바운스 검색 로직
+  // 서버 사이드 디바운스 검색
   const debouncedSearch = useMemo(() => {
     let timer: NodeJS.Timeout;
     return (value: string) => {
@@ -69,7 +76,7 @@ export function CommentTab({
         if (value) params.set('search', value);
         else params.delete('search');
 
-        params.set('commentPage', '1'); // 검색 시 1페이지로 리셋
+        params.set('commentPage', '1'); // 검색 시 1페이지로
         router.push(`/admin?${params.toString()}`);
       }, 500);
     };
@@ -104,11 +111,12 @@ export function CommentTab({
   };
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}/${month}/${day}`;
   };
 
   return (
@@ -117,7 +125,7 @@ export function CommentTab({
         <div className="relative w-full max-w-sm max-sm:max-w-xs">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="전체 댓글 내용 검색..."
+            placeholder="댓글 내용으로 검색하세요."
             value={inputValue}
             onChange={handleSearch}
             className="pl-10"
@@ -142,18 +150,37 @@ export function CommentTab({
                 <TableRow key={comment.id}>
                   <TableCell className="max-w-xs truncate">
                     {comment.isDeleted ? (
-                      <span className="text-muted-foreground italic">
-                        삭제된 댓글입니다
+                      <span className="text-destructive/50 italic">
+                        삭제된 댓글
                       </span>
                     ) : (
                       comment.content
                     )}
                   </TableCell>
+
                   <TableCell className="text-muted-foreground">
-                    {comment.writer.name}
+                    {comment.writer.isDeleted ? (
+                      <span className="text-destructive/50 italic">
+                        탈퇴한 사용자
+                      </span>
+                    ) : (
+                      comment.writer.name
+                    )}
                   </TableCell>
+
                   <TableCell className="max-w-xs truncate text-muted-foreground">
-                    {comment.post.title}
+                    {comment.post.isDeleted ? (
+                      <span className="text-destructive/50 italic">
+                        삭제된 게시글
+                      </span>
+                    ) : (
+                      <Link
+                        href={`/posts/${comment.post.id}`}
+                        className="transition-colors hover:text-primary hover:underline"
+                      >
+                        {comment.post.title}
+                      </Link>
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDate(comment.createdAt)}
@@ -193,7 +220,6 @@ export function CommentTab({
                   className="h-40 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <MessageSquareOff className="h-10 w-10 opacity-20" />
                     <p className="font-medium text-sm">검색 결과가 없습니다.</p>
                   </div>
                 </TableCell>

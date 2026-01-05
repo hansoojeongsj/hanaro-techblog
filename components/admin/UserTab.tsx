@@ -9,6 +9,7 @@ import {
   RotateCcw,
   Search,
   Trash2,
+  User,
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -32,8 +33,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  deleteUserAction,
   restoreUserAction,
+  withdrawUserAction,
 } from '../../app/admin/admin.action';
 
 interface UserData {
@@ -104,7 +105,7 @@ export function UserTab({
     try {
       const result =
         type === 'delete'
-          ? await deleteUserAction(id)
+          ? await withdrawUserAction(id)
           : await restoreUserAction(id);
       if (result.success) {
         toast.success(result.message);
@@ -124,12 +125,21 @@ export function UserTab({
     router.push(`/admin?${params.toString()}`);
   };
 
-  const formatDate = (date: Date) => new Date(date).toLocaleDateString();
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}/${month}/${day}`;
+  };
+
   const getDeletionDeadline = (deletedAt: Date) => {
     const deadline = new Date(
       new Date(deletedAt).getTime() + 7 * 24 * 60 * 60 * 1000,
     );
-    return deadline.toLocaleDateString();
+
+    return formatDate(deadline);
   };
 
   return (
@@ -138,7 +148,7 @@ export function UserTab({
         <div className="relative w-full max-w-sm">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="전체 회원 이름 또는 이메일 검색..."
+            placeholder="회원 이름 또는 이메일로 검색하세요."
             value={inputValue}
             onChange={handleSearch}
             className="pl-10"
@@ -173,11 +183,13 @@ export function UserTab({
                           src={
                             user.isDeleted
                               ? undefined
-                              : user.image ||
-                                `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`
+                              : (user.image ?? undefined)
                           }
+                          alt={user.name}
                         />
-                        <AvatarFallback>{user.name[0]}</AvatarFallback>
+                        <AvatarFallback className="bg-muted">
+                          <User className="h-3 w-3 text-muted-foreground" />
+                        </AvatarFallback>
                       </Avatar>
                       <span
                         className={`font-medium ${user.isDeleted ? 'text-muted-foreground italic' : ''}`}
@@ -244,7 +256,7 @@ export function UserTab({
                               className="text-destructive"
                               onClick={() => handleAction(user.id, 'delete')}
                             >
-                              <Trash2 className="mr-2 h-4 w-4" /> 탈퇴 처리
+                              <Trash2 className="mr-2 h-4 w-4" /> 탈퇴
                             </DropdownMenuItem>
                           </>
                         )}
