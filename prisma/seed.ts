@@ -129,7 +129,7 @@ async function main() {
         name: `유저${i}`,
         passwd: password,
         role: 'USER',
-        image: `https://api.dicebear.com/7.x/avataaars/svg?seed=user${i}`, // 랜덤 아바타
+        image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`,
       },
     });
     dummyUsers.push(user);

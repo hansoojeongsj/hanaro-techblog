@@ -11,12 +11,14 @@ interface PageProps {
 export default async function CategoryPostsPage({ params }: PageProps) {
   const { slug } = await params;
 
-  // DB에서 카테고리와 해당 게시글들을 한 번에 가져오기
-  // Prisma -> include -> 조인
   const categoryData = await prisma.category.findUnique({
     where: { slug },
     include: {
       posts: {
+        where: {
+          isDeleted: false,
+          writer: { isDeleted: false },
+        },
         orderBy: { createdAt: 'desc' },
         include: {
           writer: true,
@@ -30,7 +32,14 @@ export default async function CategoryPostsPage({ params }: PageProps) {
         },
       },
       _count: {
-        select: { posts: true },
+        select: {
+          posts: {
+            where: {
+              isDeleted: false,
+              writer: { isDeleted: false },
+            },
+          },
+        },
       },
     },
   });
@@ -58,11 +67,11 @@ export default async function CategoryPostsPage({ params }: PageProps) {
     createdAt: post.createdAt,
     writerId: String(post.writerId),
     writer: post.writer.name,
+    writerImage: post.writer.image,
     likes: post._count.postLikes,
     commentCount: post._count.comments,
   }));
 
-  // 카테고리 정보도 가공
   const category = {
     ...categoryData,
     id: String(categoryData.id),
@@ -71,7 +80,6 @@ export default async function CategoryPostsPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto px-4 pt-12 pb-16">
-      {/* Back Button */}
       <Link
         href="/categories"
         className="mb-8 inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"

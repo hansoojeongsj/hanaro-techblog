@@ -1,4 +1,4 @@
-import { Calendar, Heart, MessageCircle } from 'lucide-react';
+import { Calendar, Heart, MessageCircle, User } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -20,6 +20,7 @@ export type PostCardData = {
   writer: string;
   likes: number;
   commentCount: number;
+  writerImage?: string | null;
 };
 
 export type CategoryData = {
@@ -88,9 +89,12 @@ export function PostCard({ post, category }: PostCardProps) {
           <div className="relative z-20 flex items-center gap-2">
             <Avatar className="h-6 w-6">
               <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.writerId}`}
+                src={post.writerImage || undefined}
+                alt={post.writer}
               />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarFallback className="bg-muted">
+                <User className="h-3 w-3 text-muted-foreground" />
+              </AvatarFallback>
             </Avatar>
             <span className="text-muted-foreground text-xs">{post.writer}</span>
           </div>

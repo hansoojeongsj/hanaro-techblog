@@ -1,7 +1,7 @@
 'use client';
 
-import { Reply } from 'lucide-react';
-import { useState } from 'react';
+import { Reply, User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +11,8 @@ interface CommentFormProps {
   replyToId?: string | null;
   onCancelReply?: () => void;
   placeholder?: string;
+  userImage?: string | null;
+  userName?: string;
 }
 
 export function CommentForm({
@@ -18,8 +20,25 @@ export function CommentForm({
   replyToId,
   onCancelReply,
   placeholder = '댓글을 작성하세요...',
+  userImage,
+  userName = '사용자',
 }: CommentFormProps) {
   const [content, setContent] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previousReplyIdRef = useRef(replyToId);
+
+  useEffect(() => {
+    if (replyToId && previousReplyIdRef.current !== replyToId) {
+      if (textareaRef.current) {
+        textareaRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+    }
+
+    previousReplyIdRef.current = replyToId;
+  }, [replyToId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,11 +52,12 @@ export function CommentForm({
     <form onSubmit={handleSubmit} className="mb-6">
       <div className="flex gap-4">
         <Avatar className="h-10 w-10 shrink-0">
-          <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=me" />
-          <AvatarFallback>ME</AvatarFallback>
+          <AvatarImage src={userImage || undefined} alt={userName} />
+          <AvatarFallback className="bg-muted">
+            <User className="h-5 w-5 text-muted-foreground" />
+          </AvatarFallback>
         </Avatar>
         <div className="flex-1 space-y-3">
-          {/* 답글 작성 중 표시 */}
           {replyToId && (
             <div className="flex animate-fade-in items-center gap-2 text-muted-foreground text-sm">
               <Reply className="h-4 w-4" />
@@ -55,6 +75,7 @@ export function CommentForm({
           )}
 
           <Textarea
+            ref={textareaRef}
             placeholder={placeholder}
             value={content}
             onChange={(e) => setContent(e.target.value)}

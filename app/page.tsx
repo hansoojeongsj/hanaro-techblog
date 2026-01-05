@@ -20,7 +20,9 @@ export default async function HomePage() {
   const categories = await prisma.category.findMany({
     include: {
       _count: {
-        select: { posts: true },
+        select: {
+          posts: { where: { isDeleted: false, writer: { isDeleted: false } } },
+        },
       },
     },
     orderBy: { name: 'asc' },
@@ -29,6 +31,10 @@ export default async function HomePage() {
   // 최근 게시글 가져오기
   const recentPosts = await prisma.post.findMany({
     take: 4,
+    where: {
+      isDeleted: false,
+      writer: { isDeleted: false },
+    },
     orderBy: { createdAt: 'desc' },
     include: {
       category: true,
@@ -195,6 +201,7 @@ export default async function HomePage() {
                           writer: post.writer.name,
                           likes: post._count.postLikes,
                           commentCount: post._count.comments,
+                          writerImage: post.writer.image,
                         }}
                         category={{
                           ...post.category,

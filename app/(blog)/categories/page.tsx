@@ -14,9 +14,20 @@ export default async function CategoriesPage() {
     orderBy: { name: 'asc' },
     include: {
       _count: {
-        select: { posts: true },
+        select: {
+          posts: {
+            where: {
+              isDeleted: false,
+              writer: { isDeleted: false },
+            },
+          },
+        },
       },
       posts: {
+        where: {
+          isDeleted: false,
+          writer: { isDeleted: false },
+        },
         take: 1,
         orderBy: { createdAt: 'desc' },
         select: { title: true },

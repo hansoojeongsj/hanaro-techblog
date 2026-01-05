@@ -17,6 +17,10 @@ export default async function PostsPage() {
 
   // 게시글 전체 가져오기
   const postsData = await prisma.post.findMany({
+    where: {
+      isDeleted: false,
+      writer: { isDeleted: false },
+    },
     orderBy: { createdAt: 'desc' },
     include: {
       category: true,
@@ -41,6 +45,7 @@ export default async function PostsPage() {
     createdAt: post.createdAt,
     writerId: String(post.writerId),
     writer: post.writer.name,
+    writerImage: post.writer.image,
     likes: post._count.postLikes,
     commentCount: post._count.comments,
     category: {

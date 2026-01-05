@@ -14,7 +14,7 @@ interface CommentListProps {
   initialComments: CommentType[];
   postId: number;
   currentUserId: number;
-  isAdmin: boolean; // 👈 관리자 여부 추가
+  isAdmin: boolean;
 }
 
 export function CommentList({
@@ -30,7 +30,16 @@ export function CommentList({
     setComments(initialComments);
   }, [initialComments]);
 
+  const handleReplyClick = (id: string) => {
+    setReplyToId((prev) => (prev === id ? null : id));
+  };
+
+  const handleEditStart = () => {
+    setReplyToId(null);
+  };
+
   const handleEditComment = async (id: string, newContent: string) => {
+    setReplyToId(null);
     try {
       await updateComment(Number(id), newContent, postId);
       toast.success('댓글이 수정되었습니다.');
@@ -82,9 +91,10 @@ export function CommentList({
           <div key={comment.id} className="space-y-4">
             <CommentItem
               comment={comment}
-              onReply={setReplyToId}
+              onReply={handleReplyClick}
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
+              onEditStart={handleEditStart}
               currentUserId={currentUserId}
               isAdmin={isAdmin}
             />
@@ -92,9 +102,10 @@ export function CommentList({
               <CommentItem
                 key={reply.id}
                 comment={reply}
-                onReply={setReplyToId}
+                onReply={handleReplyClick}
                 onEdit={handleEditComment}
                 onDelete={handleDeleteComment}
+                onEditStart={handleEditStart}
                 isReply={true}
                 currentUserId={currentUserId}
                 isAdmin={isAdmin}
