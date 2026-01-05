@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 export default function Footer() {
   const handleNotImplemented = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    toast('추후 구현 예정입니다.');
+    toast('추후 업데이트 예정입니다.');
   };
 
   return (
@@ -66,7 +66,6 @@ export default function Footer() {
             <h4 className="font-semibold">링크</h4>
             <ul className="space-y-2 text-muted-foreground text-sm">
               <li>
-                {/* 추후 연결 예정 -> Link */}
                 <Link
                   href="#"
                   onClick={handleNotImplemented}

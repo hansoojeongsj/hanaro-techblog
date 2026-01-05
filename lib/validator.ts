@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'; // 👈 node: 추가
-import path from 'node:path'; // 👈 node: 추가
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { compare, hash } from 'bcryptjs';
 import z from 'zod';
 

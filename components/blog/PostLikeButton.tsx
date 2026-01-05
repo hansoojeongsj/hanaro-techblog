@@ -3,7 +3,7 @@
 import { Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { togglePostLike } from '@/app/posts/[id]/like.action';
+import { togglePostLike } from '@/app/(blog)/posts/[id]/like.action';
 import { Button } from '@/components/ui/button';
 
 interface PostLikeButtonProps {
@@ -35,18 +35,18 @@ export function PostLikeButton({
       return;
     }
 
-    // 1. 화면 먼저 바꾸기 (사용자 경험을 위해)
+    // 화면 먼저
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
     setLikes((prev) => (newLikedState ? prev + 1 : prev - 1));
 
     try {
-      // 2. 진짜 서버(DB)에 저장하기
+      // 진짜 서버에 저장
       await togglePostLike(postId, userId);
 
       toast(newLikedState ? '좋아요!' : '좋아요 취소');
     } catch (_) {
-      // 에러 나면 다시 원래대로 돌리기
+      // 에러 나면 다시 원래대로
       setIsLiked(!newLikedState);
       setLikes(initialLikes);
       toast.error('오류가 발생했습니다.');

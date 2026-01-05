@@ -2,9 +2,9 @@ import { ArrowLeft, Calendar, Clock, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 import { CategoryBadge } from '@/components/blog/CategoryBadge';
-import { CommentList } from '@/components/posts/CommentList';
-import { PostDetailActions } from '@/components/posts/PostDetailActions';
-import { PostLikeButton } from '@/components/posts/PostLikeButton';
+import { CommentList } from '@/components/blog/CommentList';
+import { PostDetailActions } from '@/components/blog/PostDetailActions';
+import { PostLikeButton } from '@/components/blog/PostLikeButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';

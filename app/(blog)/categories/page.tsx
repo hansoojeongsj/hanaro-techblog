@@ -1,7 +1,7 @@
 'use cache';
 
 import { cacheLife } from 'next/cache';
-import { CategoryCard } from '@/components/category/CategoryCard';
+import { CategoryCard } from '@/components/blog/CategoryCard';
 import { prisma } from '@/lib/prisma';
 
 export default async function CategoriesPage() {
