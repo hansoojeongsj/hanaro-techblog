@@ -50,7 +50,7 @@ export default async function CategoryPostsPage({ params }: PageProps) {
                 className="animate-slide-up"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <PostCard post={post} />
+                <PostCard post={post} category={category} />
               </div>
             ))}
           </div>

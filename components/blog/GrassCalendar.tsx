@@ -1,28 +1,23 @@
 'use client';
 
 import { useMemo } from 'react';
+import type { GrassData } from '@/app/(blog)/home.service';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { formatDate } from '@/lib/utils';
 
-type GrassData = {
-  date: string;
-  count: number;
-  level: number;
-  createdCount?: number;
-  updatedCount?: number;
-};
-interface GrassCalendarProps {
+type GrassCalendarProps = {
   data: GrassData[];
-}
+};
 
-// 스타일 상수
 const CELL_SIZE = 16;
 
 export function GrassCalendar({ data }: GrassCalendarProps) {
+  // 1. Map 변환 -> for...of 사용
   const dataMap = useMemo(() => {
     const map = new Map<string, GrassData>();
     for (const item of data) {
@@ -37,7 +32,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     const today = new Date();
 
     for (let i = 0; i < 365; i++) {
-      // 0(오늘) -> 364(과거)
       const date = new Date(today);
       date.setDate(today.getDate() - i);
 
@@ -51,12 +45,12 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
           date: key,
           count: 0,
           level: 0,
+          createdCount: 0,
+          updatedCount: 0,
         },
       );
     }
-    // row-reverse를 쓸 것이므로 데이터는 [오늘, 어제, ..., 1년전] 순서여야 함
-    // 하지만 Grid를 그릴 땐 주 단위로 묶어야 하므로 아래 로직에서 처리
-    return result.reverse(); // [1년전, ..., 어제, 오늘] 순서로 다시 뒤집음 (계산 편의~!)
+    return result.reverse(); // [1년전 -> 오늘] 순서
   }, [dataMap]);
 
   // 주 단위 분리
@@ -69,7 +63,13 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
       const firstDayOfWeek = firstDate.getDay();
 
       for (let i = 0; i < firstDayOfWeek; i++) {
-        currentWeek.push({ date: '', count: 0, level: 0 });
+        currentWeek.push({
+          date: '',
+          count: 0,
+          level: 0,
+          createdCount: 0,
+          updatedCount: 0,
+        });
       }
 
       for (const day of fullYearData) {
@@ -82,16 +82,21 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
 
       if (currentWeek.length > 0) {
         while (currentWeek.length < 7) {
-          currentWeek.push({ date: '', count: 0, level: 0 });
+          currentWeek.push({
+            date: '',
+            count: 0,
+            level: 0,
+            createdCount: 0,
+            updatedCount: 0,
+          });
         }
         result.push(currentWeek);
       }
     }
-
     return result;
   }, [fullYearData]);
 
-  // 월 라벨 위치 계산
+  // 월 라벨 위치
   const monthLabels = useMemo(() => {
     const labels: { month: string; col: number }[] = [];
     let lastMonth = '';
@@ -103,13 +108,11 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
       const month = new Date(validDay.date).toLocaleString('ko-KR', {
         month: 'short',
       });
-
       if (month !== lastMonth) {
         labels.push({ month, col });
         lastMonth = month;
       }
     });
-
     return labels;
   }, [weeks]);
 
@@ -127,13 +130,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
         return 'bg-muted/80';
     }
   };
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
 
   return (
     <div className="w-full rounded-xl border border-border bg-card p-6 shadow-sm">
@@ -164,7 +160,7 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
           <span className="h-3"></span>
         </div>
 
-        {/* 잔디밭 스크롤 영역 */}
+        {/* row-reverse 구조 */}
         <div className="scrollbar-hide flex flex-1 flex-row-reverse overflow-x-auto pb-4">
           <div className="relative min-w-fit pr-1">
             {/* 월 라벨 */}
@@ -173,11 +169,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
                 <span
                   key={`${month}-${col}`}
                   className="absolute whitespace-nowrap"
-                  // 위치 계산도 반대로 (전체 길이 - 현재 위치)
-                  // 하지만 row-reverse 컨테이너 안에서는 '왼쪽'이 시각적 '오른쪽'이 될 수 있어
-                  // 단순히 렌더링 순서만 바꾸는 게 낫습니다.
-                  // 여기서는 reversedWeeks를 쓰므로 라벨 위치도 다시 계산해야 하지만,
-                  // 쉬운 방법은 라벨도 그냥 절대 위치(`left`)로 박아두는 것입니다.
                   style={{ left: col * CELL_SIZE }}
                 >
                   {month}
@@ -188,58 +179,48 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
             {/* 그리드 */}
             <TooltipProvider delayDuration={0}>
               <div className="flex gap-1 px-1">
-                {weeks.map((week, weekIdx) => {
-                  const weekKey = week[0].date || `week-${weekIdx}`;
-                  return (
-                    <div key={weekKey} className="flex flex-col gap-1">
-                      {week.map((day, dayIdx) => {
-                        const dayKey = day.date || `${weekKey}-empty-${dayIdx}`;
-                        return (
-                          <Tooltip key={dayKey}>
-                            <TooltipTrigger asChild>
-                              <div
-                                className={`h-3 w-3 rounded-sm transition-all duration-200 ${
-                                  day.date
-                                    ? `${getGrassClass(day.level)} cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-1 hover:ring-offset-background`
-                                    : 'opacity-0'
-                                }`}
+                {weeks.map((week) => (
+                  <div
+                    key={week.find((d) => d.date)?.date || Math.random()}
+                    className="flex flex-col gap-1"
+                  >
+                    {week.map((day) => (
+                      <Tooltip key={day.date || Math.random()}>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={`h-3 w-3 rounded-sm transition-all duration-200 ${
+                              day.date
+                                ? `${getGrassClass(day.level)} cursor-pointer hover:ring-2 hover:ring-ring hover:ring-offset-1 hover:ring-offset-background`
+                                : 'opacity-0'
+                            }`}
+                          />
+                        </TooltipTrigger>
+                        {day.date && (
+                          <TooltipContent side="top" className="text-xs">
+                            {/* formatDate에 Date 객체로 넘겨서 타입 에러 해결 */}
+                            <div className="mb-1 border-b pb-1 font-semibold">
+                              {formatDate(new Date(day.date))}
+                            </div>
+                            <div className="space-y-1">
+                              <StatRow
+                                label="새 글 작성"
+                                value={day.createdCount}
                               />
-                            </TooltipTrigger>
-                            {day.date && (
-                              <TooltipContent side="top" className="text-xs">
-                                <div className="mb-1 border-b pb-1 font-semibold">
-                                  {formatDate(day.date)}
-                                </div>
-                                <div className="space-y-1">
-                                  <div className="flex items-center justify-between gap-4">
-                                    <span className="text-muted-foreground">
-                                      새 글 작성
-                                    </span>
-                                    <span className="font-medium text-primary">
-                                      {day.createdCount || 0}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center justify-between gap-4">
-                                    <span className="text-muted-foreground">
-                                      글 수정
-                                    </span>
-                                    <span className="font-medium text-accent-foreground">
-                                      {day.updatedCount || 0}
-                                    </span>
-                                  </div>
-                                  <div className="mt-1 flex items-center justify-between border-t pt-1 font-bold">
-                                    <span>총 활동</span>
-                                    <span>{day.count}</span>
-                                  </div>
-                                </div>
-                              </TooltipContent>
-                            )}
-                          </Tooltip>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
+                              <StatRow
+                                label="글 수정"
+                                value={day.updatedCount}
+                              />
+                              <div className="mt-1 flex items-center justify-between border-t pt-1 font-bold">
+                                <span>총 활동</span>
+                                <span>{day.count}</span>
+                              </div>
+                            </div>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    ))}
+                  </div>
+                ))}
               </div>
             </TooltipProvider>
           </div>
@@ -248,3 +229,10 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     </div>
   );
 }
+
+const StatRow = ({ label, value }: { label: string; value?: number }) => (
+  <div className="flex items-center justify-between gap-4">
+    <span className="text-muted">{label}</span>
+    <span className="font-medium text-primary">{value || 0}</span>
+  </div>
+);

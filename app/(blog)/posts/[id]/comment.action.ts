@@ -17,9 +17,7 @@ export async function createComment(formData: {
       parentId: formData.parentId || null,
     },
   });
-
-  revalidatePath('/');
-  revalidatePath(`/posts/${formData.postId}`);
+  revalidatePath('/', 'layout');
 }
 
 export async function deleteComment(id: number, postId: number) {

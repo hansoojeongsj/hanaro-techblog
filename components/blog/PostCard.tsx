@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { formatFullDate } from '@/lib/utils';
 import { CategoryBadge } from './CategoryBadge';
 
 export type PostCardData = {
@@ -27,7 +28,6 @@ export type CategoryData = {
   id: string | number;
   name: string;
   slug: string;
-  color?: string | null;
   icon?: string | null;
 };
 
@@ -37,14 +37,6 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, category }: PostCardProps) {
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
       <Link href={`/posts/${post.id}`} className="absolute inset-0 z-10">
@@ -68,8 +60,8 @@ export function PostCard({ post, category }: PostCardProps) {
             <div />
           )}
           <div className="flex items-center gap-1 text-muted-foreground text-xs leading-none">
-            <Calendar className="relative top-px h-3 w-3" />
-            <span>{formatDate(post.createdAt)}</span>
+            <Calendar className="relative top-px mb-1 h-3 w-3" />
+            <span>{formatFullDate(post.createdAt)}</span>
           </div>
         </div>
 
@@ -96,7 +88,9 @@ export function PostCard({ post, category }: PostCardProps) {
                 <User className="h-3 w-3 text-muted-foreground" />
               </AvatarFallback>
             </Avatar>
-            <span className="text-muted-foreground text-xs">{post.writer}</span>
+            <span className="text-[14px] text-muted-foreground">
+              {post.writer}
+            </span>
           </div>
 
           <div className="flex items-center gap-4 text-muted-foreground text-xs">

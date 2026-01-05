@@ -38,7 +38,6 @@ model Category {
   name        String  @unique @db.VarChar(31)
   slug        String  @unique @db.VarChar(31)
   icon        String? @db.VarChar(31)
-  color       String? @db.VarChar(31)
   description String? @db.VarChar(255)
 
   posts Post[]

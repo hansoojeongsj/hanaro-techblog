@@ -30,6 +30,5 @@ export async function togglePostLike(postId: number, userId: number) {
       },
     });
   }
-  revalidatePath('/');
-  revalidatePath(`/posts/${postId}`);
+  revalidatePath('/', 'layout');
 }

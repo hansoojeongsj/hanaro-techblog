@@ -32,9 +32,7 @@ export async function withdrawUserAction(userId: number) {
       }),
     ]);
 
-    revalidatePath('/');
-    revalidatePath('/categories');
-    revalidatePath('/admin');
+    revalidatePath('/', 'layout');
     return {
       success: true,
       message: '탈퇴 유예 처리가 완료되었습니다. (7일 후 정보 파기)',
@@ -100,7 +98,7 @@ export async function restoreUserAction(userId: number) {
       },
     });
 
-    revalidatePath('/admin');
+    revalidatePath('/', 'layout');
     return { success: true, message: '회원 계정이 성공적으로 복구되었습니다.' };
   } catch (error) {
     console.error('유저 복구 에러:', error);
@@ -123,9 +121,7 @@ export async function deletePostAction(postId: number) {
       data: { isDeleted: true },
     });
 
-    revalidatePath('/admin');
-    revalidatePath('/posts');
-
+    revalidatePath('/', 'layout');
     return { success: true, message: '게시글이 삭제 처리되었습니다.' };
   } catch (error) {
     console.error('게시글 삭제 에러:', error);
@@ -149,6 +145,8 @@ export async function deleteCommentAction(commentId: number) {
     });
 
     revalidatePath('/admin');
+    revalidatePath('/posts');
+
     return { success: true, message: '댓글이 삭제 처리되었습니다.' };
   } catch (error) {
     console.error('댓글 삭제 에러:', error);

@@ -95,16 +95,20 @@ export const getCategoryDetailBySlug = async (
     posts: data.posts.map((post) => ({
       id: String(post.id),
       title: post.title,
-      excerpt:
-        post.content.length > 80
-          ? `${post.content.substring(0, 80)}...`
-          : post.content,
+      excerpt: post.content.substring(0, 80),
+      content: post.content,
       createdAt: post.createdAt,
       writer: post.writer.name,
       writerId: String(post.writerId),
       writerImage: post.writer.image,
       likes: post._count.postLikes,
       commentCount: post._count.comments,
+      categoryId: String(data.id),
+      category: {
+        id: String(data.id),
+        name: data.name,
+        slug: data.slug,
+      },
     })),
   };
 };

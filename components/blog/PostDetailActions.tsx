@@ -30,7 +30,7 @@ interface PostDetailActionsProps {
 export function PostDetailActions({ postId }: PostDetailActionsProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
-  const [open, setOpen] = useState(false); // 다이얼로그 상태
+  const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
     setIsPending(true);

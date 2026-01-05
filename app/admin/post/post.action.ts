@@ -47,8 +47,7 @@ export const handlePostAction = async (
       });
     }
 
-    revalidatePath('/');
-    revalidatePath('/posts');
+    revalidatePath('/', 'layout');
     if (id) revalidatePath(`/posts/${id}`);
   } catch (_) {
     return {

@@ -148,7 +148,7 @@ export function UserTab({
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground text-xs">
+                <TableCell className="text-muted-foreground">
                   {user.isDeleted && user.deletedAt ? (
                     user.email.startsWith('deleted_') ? (
                       <span>{formatDate(user.deletedAt)} 탈퇴됨</span>
