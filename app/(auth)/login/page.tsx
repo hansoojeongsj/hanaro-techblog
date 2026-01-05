@@ -34,7 +34,7 @@ export default function LoginPage() {
   };
 
   const handleForgotPassword = () => {
-    toast.info('알림', { description: '추후 구현 예정입니다.' });
+    toast.info('알림', { description: '추후 업데이트 예정입니다.' });
   };
 
   return (

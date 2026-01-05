@@ -1,16 +1,21 @@
 import { FileText, type LucideIcon, MessageSquare, Users } from 'lucide-react';
-import { comments, posts, users } from '@/data/mockData';
 
-export function AdminStats() {
+interface AdminStatsProps {
+  userCount: number;
+  postCount: number;
+  commentCount: number;
+}
+
+export function AdminStats({
+  userCount,
+  postCount,
+  commentCount,
+}: AdminStatsProps) {
   return (
     <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-      <StatCard icon={Users} count={users.length} label="전체 회원" />
-      <StatCard icon={FileText} count={posts.length} label="전체 게시글" />
-      <StatCard
-        icon={MessageSquare}
-        count={comments.length}
-        label="전체 댓글"
-      />
+      <StatCard icon={Users} count={userCount} label="전체 회원" />
+      <StatCard icon={FileText} count={postCount} label="전체 게시글" />
+      <StatCard icon={MessageSquare} count={commentCount} label="전체 댓글" />
     </div>
   );
 }
@@ -31,7 +36,7 @@ function StatCard({
           <Icon className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <p className="font-bold text-2xl">{count}</p>
+          <p className="font-bold text-2xl">{count.toLocaleString()}</p>
           <p className="text-muted-foreground text-sm">{label}</p>
         </div>
       </div>

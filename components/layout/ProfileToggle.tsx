@@ -1,8 +1,8 @@
 'use client';
 
-import { LogIn, LogOut, Plus, User } from 'lucide-react'; // LogIn, LogOut 아이콘 추가
+import { LogIn, LogOut, Plus, User } from 'lucide-react';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react'; // 로그아웃 기능 추가
+import { signOut } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {

@@ -22,6 +22,7 @@ model User {
   image     String?   @db.VarChar(255)
   role      Role      @default(USER)
   provider  String?   @default("credentials") @db.VarChar(31)
+  isDeleted   Boolean   @default(false)
 
   createdAt DateTime  @default(now()) @db.Timestamp(0)
   updatedAt DateTime  @default(now()) @updatedAt @db.Timestamp(0)
@@ -49,16 +50,17 @@ model Category {
 model Post {
   id        Int      @id @default(autoincrement()) @db.UnsignedInt
   title     String   @db.VarChar(255)
-  content   String   @db.LongText // SQL의 longtext 매핑
+  content   String   @db.LongText
   thumbnail String?  @db.VarChar(255)
   views     Int      @default(0) @db.UnsignedInt
+  isDeleted Boolean @default(false)
 
   writerId   Int @db.UnsignedInt
   categoryId Int @db.UnsignedTinyInt // Category id 타입과 일치
 
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
-
+  
   // 관계 설정
   writer    User       @relation(fields: [writerId], references: [id], onDelete: Cascade, map: "fk_Post_writer")
   category  Category   @relation(fields: [categoryId], references: [id], onDelete: Restrict, map: "fk_Post_category")

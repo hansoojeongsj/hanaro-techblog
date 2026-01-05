@@ -51,7 +51,7 @@ export default function SignupPage() {
 
   const handleGithubLogin = () => {
     toast.info('준비 중', {
-      description: 'GitHub 로그인은 추후 구현 예정입니다.',
+      description: 'GitHub 로그인은 추후 업데이트 예정입니다.',
     });
   };
 

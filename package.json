@@ -11,6 +11,7 @@
     "db:push": "prisma db push",
     "db:gen": "prisma generate",
     "db:seed": "prisma db seed",
+    "db:mig": "prisma migrate dev",
     "format": "biome fsormat --write"
   },
   "dependencies": {
