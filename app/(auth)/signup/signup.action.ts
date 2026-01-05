@@ -3,17 +3,17 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 
-// 리턴값의 타입 정의 (any 대체)
+// 리턴값의 타입 정의
 export type SignUpState = {
   message: string;
-  type: 'success' | 'error' | ''; // 성공, 에러, 혹은 초기값(빈값)
+  type: 'success' | 'error' | ''; // 성공, 에러, 혹은 초기값
 };
 
 export async function signUp(
   _prevState: SignUpState, // 타입 적용 + 안 쓰는 변수는 _ 붙이기
   formData: FormData,
 ): Promise<SignUpState> {
-  // 리턴 타입도 명시
+  // 리턴 타입
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -41,7 +41,6 @@ export async function signUp(
     },
   });
 
-  // 성공 리턴
   return {
     type: 'success',
     message: '회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.',

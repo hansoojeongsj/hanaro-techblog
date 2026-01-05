@@ -31,6 +31,5 @@ export async function togglePostLike(postId: number, userId: number) {
     });
   }
 
-  // 페이지의 좋아요 숫자를 새로고침 없이 갱신
   revalidatePath(`/posts/${postId}`);
 }

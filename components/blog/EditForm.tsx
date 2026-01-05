@@ -20,11 +20,10 @@ import {
 } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
-// 1. 기본이 되는 카테고리와 포스트 데이터 타입 정의
 export interface Category {
   id: string;
   name: string;
-  color?: string; // 필요한 경우를 대비해 추가
+  color?: string;
 }
 
 export interface PostInitialData {
@@ -40,7 +39,6 @@ interface EditFormProps {
 }
 
 export function EditForm({ initialPost, categories }: EditFormProps) {
-  // useActionState의 제네릭 타입을 설정하여 state의 타입을 보장합니다.
   const [state, formAction, isPending] = useActionState<EditState, FormData>(
     updatePostAction,
     { error: undefined, data: undefined },
@@ -150,7 +148,6 @@ export function EditForm({ initialPost, categories }: EditFormProps) {
               수정 완료
             </Button>
           </div>
-          {/* 전체적인 서버 오류 메시지 */}
           {state?.error && typeof state.error === 'string' && (
             <p className="text-center text-destructive text-sm">
               {state.error}

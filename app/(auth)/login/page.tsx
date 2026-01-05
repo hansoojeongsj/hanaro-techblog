@@ -41,7 +41,6 @@ export default function LoginPage() {
     <div className="flex min-h-[calc(100vh-200px)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md animate-scale-in">
         <div className="rounded-2xl border border-border bg-card p-8 shadow-lg">
-          {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="mb-2 font-bold text-2xl">로그인</h1>
             <p className="text-muted-foreground">
@@ -49,7 +48,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* OAuth Buttons */}
           <div className="mb-6 space-y-3">
             <Button
               variant="outline"
@@ -76,7 +74,7 @@ export default function LoginPage() {
             </span>
           </div>
 
-          {/* Email Form (여기 action 연결!) */}
+          {/* Email Form */}
           <form action={formAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">이메일</Label>
@@ -84,7 +82,7 @@ export default function LoginPage() {
                 <Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
-                  name="email" // name 필수
+                  name="email"
                   type="email"
                   placeholder="email@example.com"
                   className="h-12 pl-10"
@@ -130,7 +128,6 @@ export default function LoginPage() {
             <LoginButton />
           </form>
 
-          {/* Footer */}
           <p className="mt-6 text-center text-muted-foreground text-sm">
             아직 계정이 없으신가요?{' '}
             <Link

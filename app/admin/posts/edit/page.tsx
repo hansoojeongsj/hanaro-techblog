@@ -9,12 +9,12 @@ export default async function EditPage({
   const { id } = await searchParams;
   const postId = Number(id);
 
-  // 1. 진짜 DB에서 글 정보 가져오기
+  // 진짜 DB에서 글 정보 가져오기
   const post = await prisma.post.findUnique({
     where: { id: postId },
   });
 
-  // 2. 카테고리 목록도 가져오기
+  // 카테고리 목록 가져오기
   const categories = await prisma.category.findMany();
 
   if (!post) return <div>글을 찾을 수 없습니다.</div>;

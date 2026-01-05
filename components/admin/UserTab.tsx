@@ -100,7 +100,6 @@ export function UserTab() {
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      {/* 👇 여기 </Button>이 빠져있었습니다! */}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -112,7 +111,6 @@ export function UserTab() {
                           <MoreHorizontal className="h-4 w-4" />
                         )}
                       </Button>
-                      {/* 👆 닫는 태그 추가 완료 */}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>

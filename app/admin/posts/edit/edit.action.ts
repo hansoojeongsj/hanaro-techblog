@@ -35,6 +35,5 @@ export async function updatePostAction(
     return { error: '수정 중 오류가 발생했습니다.' };
   }
 
-  // 수정 완료 후 해당 글 상세페이지로 이동
   redirect(`/posts/${id}`);
 }

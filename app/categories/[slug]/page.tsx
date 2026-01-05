@@ -9,20 +9,18 @@ interface PageProps {
 }
 
 export default async function CategoryPostsPage({ params }: PageProps) {
-  // URL 파라미터(slug) 꺼내기 (await 필수!)
   const { slug } = await params;
 
   // DB에서 카테고리와 해당 게시글들을 한 번에 가져오기
-  // (Prisma의 강력한 기능: include를 쓰면 조인(Join)해서 가져옵니다)
+  // Prisma -> include -> 조인
   const categoryData = await prisma.category.findUnique({
-    where: { slug }, // URL의 slug(예: 'git')와 일치하는 카테고리 찾기
+    where: { slug },
     include: {
-      // 게시글 가져오기 (최신순 정렬)
       posts: {
         orderBy: { createdAt: 'desc' },
         include: {
-          writer: true, // 작성자 정보 (이름 필요)
-          category: true, // 게시글의 카테고리 정보 (색상 등)
+          writer: true,
+          category: true,
           _count: {
             select: {
               comments: true,
@@ -37,10 +35,7 @@ export default async function CategoryPostsPage({ params }: PageProps) {
     },
   });
 
-  // 예외 처리: DB에 해당 카테고리가 없을 때
   if (!categoryData) {
-    // Next.js 기본 404 페이지를 띄우거나, 아래 커스텀 UI를 리턴해도 됩니다.
-    // 여기서는 요청하신 스타일대로 리턴합니다.
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <h1 className="mb-4 font-bold text-2xl">
@@ -56,14 +51,13 @@ export default async function CategoryPostsPage({ params }: PageProps) {
   const posts = categoryData.posts.map((post) => ({
     ...post,
     id: String(post.id),
-    // 본문 요약 (80자)
     excerpt:
       post.content.length > 80
         ? `${post.content.substring(0, 80)}...`
         : post.content,
     createdAt: post.createdAt,
     writerId: String(post.writerId),
-    writer: post.writer.name, // 작성자 이름
+    writer: post.writer.name,
     likes: post._count.postLikes,
     commentCount: post._count.comments,
   }));

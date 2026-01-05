@@ -15,14 +15,14 @@ export async function loginAction(
   try {
     // formData에서 값 꺼내기
     const email = formData.get('email');
-    const passwd = formData.get('passwd'); // Input name="passwd" 확인!
+    const passwd = formData.get('passwd'); // Input name=passwd 확인
 
-    // signIn 함수에 객체로 전달 (+ redirectTo 옵션 추가)
-    // formData를 통째로 넘기지 말고, 필요한 것만 쏙쏙 뽑아서 넘깁니다.
+    // signIn 함수에 객체로 전달
+    // formData를 통째로 넘기지 말고, 필요한 것만
     await signIn('credentials', {
       email,
       passwd,
-      redirectTo: '/', // 성공하면 이동
+      redirectTo: '/',
     });
 
     return { message: '로그인 성공', type: 'success' };

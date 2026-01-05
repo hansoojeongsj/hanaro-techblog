@@ -87,7 +87,6 @@ export function PostCard({ post, category }: PostCardProps) {
         <div className="flex w-full items-center justify-between">
           <div className="relative z-20 flex items-center gap-2">
             <Avatar className="h-6 w-6">
-              {/* writerId를 사용하여 아바타 생성 */}
               <AvatarImage
                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.writerId}`}
               />

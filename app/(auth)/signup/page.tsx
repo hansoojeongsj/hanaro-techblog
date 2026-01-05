@@ -26,14 +26,13 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // 서버 응답 처리 (성공/실패 분기)
+  // 서버 응답 처리
   useEffect(() => {
     if (state?.type === 'error') {
       toast.error(state.message);
     } else if (state?.type === 'success') {
       toast.success(state.message);
 
-      // 토스트 메시지를 읽을 시간을 1.5초 정도 주고 이동합니다
       setTimeout(() => {
         router.push('/login');
       }, 1500);

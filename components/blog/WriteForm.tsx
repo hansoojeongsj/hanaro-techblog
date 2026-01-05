@@ -112,7 +112,6 @@ export function WriteForm({ categories }: WriteFormProps) {
         <form action={formAction} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="category">카테고리</Label>
-            {/* 실제 서버로 전송될 Hidden Input */}
             <input type="hidden" name="categoryId" value={preview.categoryId} />
 
             <Select

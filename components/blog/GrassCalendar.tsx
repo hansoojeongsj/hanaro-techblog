@@ -19,11 +19,10 @@ interface GrassCalendarProps {
   data: GrassData[];
 }
 
-// 스타일 상수 (픽셀 단위)
+// 스타일 상수
 const CELL_SIZE = 16;
 
 export function GrassCalendar({ data }: GrassCalendarProps) {
-  // 데이터 Map 변환
   const dataMap = useMemo(() => {
     const map = new Map<string, GrassData>();
     for (const item of data) {
@@ -32,15 +31,15 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     return map;
   }, [data]);
 
-  // 365일 데이터 생성 (오늘부터 과거로)
+  // 365일 데이터 생성
   const fullYearData = useMemo(() => {
     const result: GrassData[] = [];
     const today = new Date();
 
     for (let i = 0; i < 365; i++) {
-      // 순서 변경: 0(오늘) -> 364(과거)
+      // 0(오늘) -> 364(과거)
       const date = new Date(today);
-      date.setDate(today.getDate() - i); // 오늘부터 과거로
+      date.setDate(today.getDate() - i);
 
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -138,7 +137,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
 
   return (
     <div className="w-full rounded-xl border border-border bg-card p-6 shadow-sm">
-      {/* 헤더 */}
       <div className="mb-6 flex items-center justify-between">
         <h3 className="font-semibold text-lg">활동 기록</h3>
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
@@ -156,7 +154,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
       </div>
 
       <div className="flex gap-2">
-        {/* 요일 라벨 */}
         <div className="flex flex-col gap-1 pt-6 font-medium text-[10px] text-muted-foreground leading-3">
           <span className="h-3"></span>
           <span className="flex h-3 items-center">월</span>
@@ -168,7 +165,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
         </div>
 
         {/* 잔디밭 스크롤 영역 */}
-        {/* [핵심 변경] flex-row-reverse 적용 */}
         <div className="scrollbar-hide flex flex-1 flex-row-reverse overflow-x-auto pb-4">
           <div className="relative min-w-fit pr-1">
             {/* 월 라벨 */}
@@ -192,9 +188,7 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
             {/* 그리드 */}
             <TooltipProvider delayDuration={0}>
               <div className="flex gap-1 px-1">
-                {/* weeks 데이터 그대로 사용하되, 스크롤 시작점만 오른쪽으로 바꿈 */}
                 {weeks.map((week, weekIdx) => {
-                  // reversedWeeks 대신 그냥 weeks 사용
                   const weekKey = week[0].date || `week-${weekIdx}`;
                   return (
                     <div key={weekKey} className="flex flex-col gap-1">

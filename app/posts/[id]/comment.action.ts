@@ -3,12 +3,11 @@
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 
-// 댓글 등록
 export async function createComment(formData: {
   postId: number;
   content: string;
   parentId?: number | null;
-  writerId: number; // 실제로는 auth 세션에서 가져와야 함
+  writerId: number;
 }) {
   await prisma.comment.create({
     data: {
@@ -19,11 +18,9 @@ export async function createComment(formData: {
     },
   });
 
-  // 페이지 새로고침 없이 데이터 갱신
   revalidatePath(`/posts/${formData.postId}`);
 }
 
-// 댓글 삭제
 export async function deleteComment(id: number, postId: number) {
   await prisma.comment.update({
     where: { id },

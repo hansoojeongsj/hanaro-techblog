@@ -52,7 +52,6 @@ export function PostsClient({ initialPosts, categories }: PostsClientProps) {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      {/* 헤더 영역 */}
       <div className="mb-12 animate-fade-in text-center">
         <h1 className="mb-4 font-bold text-3xl md:text-4xl">전체 게시글</h1>
         <p className="mx-auto max-w-xl text-muted-foreground">
@@ -62,7 +61,6 @@ export function PostsClient({ initialPosts, categories }: PostsClientProps) {
 
       {/* 검색 및 필터 영역 */}
       <div className="mx-auto mb-12 max-w-4xl animate-slide-up space-y-6">
-        {/* 검색바 */}
         <div className="relative">
           <Search className="-translate-y-1/2 absolute top-1/2 left-4 h-5 w-5 text-muted-foreground" />
           <Input
@@ -83,7 +81,6 @@ export function PostsClient({ initialPosts, categories }: PostsClientProps) {
           )}
         </div>
 
-        {/* 카테고리 필터 버튼 그룹 */}
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-muted-foreground text-sm">카테고리:</span>
           <button

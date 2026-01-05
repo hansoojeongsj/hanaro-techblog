@@ -5,13 +5,13 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// 1.5초 대기를 위한 헬퍼 함수
+// 1.5초 대기
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 type ValidError = {
   error: Record<string, string | undefined>;
   data: Record<string, string | undefined | null>;
-  success?: boolean; // 성공 여부 추가
+  success?: boolean; // 성공 여부
 };
 
 export const writePostAction = async (
@@ -57,6 +57,5 @@ export const writePostAction = async (
     };
   }
 
-  // 성공 시 목록으로 이동
   redirect('/posts');
 };
