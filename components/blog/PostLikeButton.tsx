@@ -29,7 +29,6 @@ export function PostLikeButton({
   }, [initialIsLiked, initialLikes]);
 
   const handleLike = async () => {
-    // async 추가
     if (!userId) {
       toast.error('로그인이 필요합니다!');
       return;
@@ -42,7 +41,7 @@ export function PostLikeButton({
 
     try {
       // 진짜 서버에 저장
-      await togglePostLike(postId, userId);
+      await togglePostLike(postId);
 
       toast(newLikedState ? '좋아요!' : '좋아요 취소');
     } catch (_) {

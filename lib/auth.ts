@@ -59,23 +59,23 @@ export const {
         };
       },
     }),
-    Github({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-    }),
+    Github,
   ],
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === 'credentials') return true;
+
       if (account?.provider === 'github') {
         try {
           const email = user.email;
           if (!email) return false;
-          const existingUser = await prisma.user.findUnique({
+
+          let dbUser = await prisma.user.findUnique({
             where: { email },
           });
-          if (!existingUser) {
-            await prisma.user.create({
+
+          if (!dbUser) {
+            dbUser = await prisma.user.create({
               data: {
                 email,
                 name: user.name || 'User',
@@ -84,6 +84,14 @@ export const {
               },
             });
           }
+
+          if (dbUser.isDeleted) {
+            throw new Error('탈퇴 처리 중인 계정입니다.');
+          }
+
+          user.id = String(dbUser.id);
+          user.role = dbUser.role;
+
           return true;
         } catch (error) {
           console.error('Social Login Error:', error);
@@ -92,17 +100,23 @@ export const {
       }
       return true;
     },
+
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
       }
-      if (trigger === 'update' && session) return { ...token, ...session };
+
+      if (trigger === 'update' && session) {
+        return { ...token, ...session };
+      }
+
       return token;
     },
+
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
+      if (token && session.user) {
+        session.user.id = String(token.id);
         session.user.role = token.role as 'ADMIN' | 'USER';
       }
       return session;

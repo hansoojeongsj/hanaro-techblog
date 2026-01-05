@@ -124,7 +124,7 @@ export function UserTab({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground italic">
+                <TableCell className="text-muted-foreground">
                   {user.isDeleted ? '알 수 없음' : user.email}
                 </TableCell>
                 <TableCell>

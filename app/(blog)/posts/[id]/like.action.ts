@@ -1,13 +1,22 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-export async function togglePostLike(postId: number, userId: number) {
+export async function togglePostLike(postId: number) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error('로그인이 필요한 서비스입니다.');
+  }
+
+  const currentUserId = Number(session.user.id);
+
   const existingLike = await prisma.postLike.findUnique({
     where: {
       userId_postId: {
-        userId: userId,
+        userId: currentUserId,
         postId: postId,
       },
     },
@@ -17,7 +26,7 @@ export async function togglePostLike(postId: number, userId: number) {
     await prisma.postLike.delete({
       where: {
         userId_postId: {
-          userId: userId,
+          userId: currentUserId,
           postId: postId,
         },
       },
@@ -25,7 +34,7 @@ export async function togglePostLike(postId: number, userId: number) {
   } else {
     await prisma.postLike.create({
       data: {
-        userId: userId,
+        userId: currentUserId,
         postId: postId,
       },
     });

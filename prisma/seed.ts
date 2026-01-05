@@ -34,14 +34,14 @@ const randomComments = [
 ];
 
 async function main() {
-  console.log('🧹 기존 데이터를 싹 비웁니다...');
+  console.log('기존 데이터를 싹 비웁니다...');
   await prisma.postLike.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.post.deleteMany();
   await prisma.category.deleteMany();
   await prisma.user.deleteMany();
 
-  console.log('🌱 시드 데이터 생성을 시작합니다...');
+  console.log('시드 데이터 생성을 시작합니다...');
 
   const categoriesData = [
     {
@@ -95,7 +95,7 @@ async function main() {
     },
   });
 
-  console.log('👥 일반 사용자 50명 생성 중...');
+  console.log('일반 사용자 50명 생성 중...');
   const dummyUsers = [];
   for (let i = 1; i <= 50; i++) {
     const user = await prisma.user.create({
@@ -109,7 +109,7 @@ async function main() {
     dummyUsers.push(user);
   }
 
-  console.log('📝 잔디용 게시글 생성 중...');
+  console.log('잔디용 게시글 생성 중...');
   const postTitles = ['가이드', '핵심정리', '꿀팁', '분석', '튜토리얼', '회고'];
   const DAYS_RANGE = 90;
 
@@ -132,7 +132,9 @@ async function main() {
         content: `${category.name}에 대한 심도 깊은 내용을 다룹니다.
 관리자가 작성한 소중한 글입니다.
 
+
 엔터 반영 테스트
+
 줄바꿈이 잘 되나요?`,
         views: getRandomInt(100, 1000),
         isDeleted: i % 10 === 0,
@@ -185,8 +187,8 @@ async function main() {
     }
   }
 
-  console.log('🎉 시드 데이터 생성 완료!');
-  console.log('✅ 관리자 계정: admin@hanaro.com / 비밀번호: 1234');
+  console.log('시드 데이터 생성 완료!');
+  console.log('관리자 계정: admin@hanaro.com / 비밀번호: 1234');
 }
 
 main()

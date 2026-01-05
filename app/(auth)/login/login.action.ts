@@ -51,6 +51,6 @@ export async function loginAction(
   }
 }
 
-export async function githubLoginAction() {
+export async function handleGithubLogin() {
   await signIn('github', { redirectTo: '/' });
 }
