@@ -69,7 +69,6 @@ export async function anonymizeOldUsersAction() {
           email: `deleted_${user.id}_${Date.now()}@deleted.com`,
           passwd: null,
           image: null,
-          provider: null,
         },
       }),
     );
