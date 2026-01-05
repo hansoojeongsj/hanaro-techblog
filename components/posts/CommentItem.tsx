@@ -4,7 +4,7 @@ import {
   Check,
   CornerDownRight,
   Edit,
-  MoreHorizontal,
+  MoreVertical,
   Reply,
   Trash2,
   X,
@@ -23,9 +23,11 @@ import { cn } from '@/lib/utils';
 
 export interface CommentType {
   id: string;
+  writerId: number;
   author: { name: string; avatar?: string };
   content: string;
   createdAt: Date | string;
+  updatedAt?: Date | string;
   isDeleted?: boolean;
   parentId?: string | null;
 }
@@ -36,6 +38,8 @@ interface CommentItemProps {
   onEdit: (id: string, newContent: string) => void;
   onDelete: (id: string) => void;
   isReply?: boolean;
+  currentUserId: number;
+  isAdmin: boolean;
 }
 
 export function CommentItem({
@@ -44,6 +48,8 @@ export function CommentItem({
   onEdit,
   onDelete,
   isReply = false,
+  currentUserId,
+  isAdmin,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
@@ -53,6 +59,8 @@ export function CommentItem({
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: '2-digit', // 시간까지 보이면 더 정확하겠죠?
+      minute: '2-digit',
     });
   };
 
@@ -68,13 +76,19 @@ export function CommentItem({
     setIsEditing(false);
   };
 
+  const canManage = isAdmin || Number(comment.writerId) === currentUserId;
+  const isUpdated =
+    comment.updatedAt &&
+    new Date(comment.updatedAt).getTime() >
+      new Date(comment.createdAt).getTime();
+
   return (
     <div className={cn('group flex gap-4', isReply && 'pl-10 md:pl-14')}>
       {isReply && (
         <CornerDownRight className="mt-2 h-5 w-5 shrink-0 text-muted-foreground/50" />
       )}
 
-      {/* 1. 아바타 처리: 삭제되면 기본 아이콘(?) 표시 */}
+      {/* 아바타 처리: 삭제되면 기본 아이콘 표시 */}
       <Avatar className="h-10 w-10 shrink-0">
         <AvatarImage
           src={comment.isDeleted ? undefined : comment.author.avatar}
@@ -88,7 +102,6 @@ export function CommentItem({
         <div className="rounded-lg border border-transparent bg-muted/50 p-4 transition-colors group-hover:border-border">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {/* 2. 이름 처리: 삭제되면 '(알 수 없음)' 표시 */}
               <span
                 className={cn(comment.isDeleted && 'text-muted-foreground')}
               >
@@ -97,18 +110,20 @@ export function CommentItem({
               <span className="text-muted-foreground text-xs">
                 {formatDate(comment.createdAt)}
               </span>
+              {!comment.isDeleted && isUpdated && comment.updatedAt && (
+                <span className="flex gap-1 text-muted-foreground text-xs before:mr-1 before:content-['•']">
+                  <span>수정: </span>
+                  {formatDate(comment.updatedAt)}
+                </span>
+              )}
             </div>
 
-            {/* 삭제되지 않고 & 수정 중 아닐 때만 메뉴 표시 */}
-            {!comment.isDeleted && !isEditing && (
+            {/* canManage가 true일 때만 수정/삭제 메뉴 노출 */}
+            {!comment.isDeleted && !isEditing && canManage && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">

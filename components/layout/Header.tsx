@@ -15,7 +15,7 @@ interface HeaderProps {
     name: string;
     email: string;
     avatar?: string;
-    role: 'admin' | 'user';
+    role: 'ADMIN' | 'USER';
   };
 }
 

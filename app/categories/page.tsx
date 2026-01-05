@@ -1,16 +1,29 @@
+'use cache';
+
+import { cacheLife } from 'next/cache';
 import { CategoryCard } from '@/components/category/CategoryCard';
-import { categories, posts } from '@/data/mockData';
+import { prisma } from '@/lib/prisma';
 
-const categoryDescriptions: Record<string, string> = {
-  javascript: '웹의 근간이 되는 프로그래밍 언어 JavaScript에 대한 글',
-  typescript: '타입 안정성을 제공하는 TypeScript 관련 글',
-  react: 'Facebook이 만든 UI 라이브러리 React 관련 글',
-  nextjs: 'React 기반 풀스택 프레임워크 Next.js 관련 글',
-  css: '스타일링과 레이아웃에 관한 CSS 글',
-  git: '버전 관리 시스템 Git 관련 글',
-};
+export default async function CategoriesPage() {
+  cacheLife({
+    stale: 10,
+    revalidate: 3600,
+  });
 
-export default function CategoriesPage() {
+  const categoriesData = await prisma.category.findMany({
+    orderBy: { name: 'asc' },
+    include: {
+      _count: {
+        select: { posts: true },
+      },
+      posts: {
+        take: 1,
+        orderBy: { createdAt: 'desc' },
+        select: { title: true },
+      },
+    },
+  });
+
   return (
     <div className="container mx-auto px-4 pt-12 pb-16">
       <div className="mb-12 animate-fade-in text-center">
@@ -21,21 +34,23 @@ export default function CategoriesPage() {
       </div>
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {categories.map((category, index) => {
-          // 각 카테고리의 최신 글 찾기
-          const latestPost = posts.find((p) => p.categoryId === category.id);
+        {categoriesData.map((data, index) => {
+          const latestPostTitle = data.posts[0]?.title;
 
           return (
             <div
-              key={category.id}
+              key={data.id}
               className="animate-slide-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {/* ⭐ 여기서 CategoryCard 사용! */}
               <CategoryCard
-                category={category}
-                latestPostTitle={latestPost?.title}
-                categoryDescriptions={categoryDescriptions[category.slug]}
+                category={{
+                  ...data,
+                  id: String(data.id),
+                  postCount: data._count.posts,
+                }}
+                latestPostTitle={latestPostTitle}
+                categoryDescriptions={data.description || ''}
               />
             </div>
           );

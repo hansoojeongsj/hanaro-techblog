@@ -28,7 +28,6 @@ export function CategoryBadge({
   showCount = false,
   size = 'md',
 }: CategoryBadgeProps) {
-  // category가 undefined일 경우
   if (!category) return null;
 
   const colorClass =

@@ -1,55 +1,59 @@
-'use client';
-
-// 1. 아이콘 추가 (MoreVertical, Pencil, Trash2)
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  Heart,
-  MessageCircle,
-  MoreVertical,
-  Pencil,
-  Trash2,
-} from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
-import { use, useState } from 'react';
-import { toast } from 'sonner';
 
 import { CategoryBadge } from '@/components/blog/CategoryBadge';
 import { CommentList } from '@/components/posts/CommentList';
+import { PostDetailActions } from '@/components/posts/PostDetailActions';
+import { PostLikeButton } from '@/components/posts/PostLikeButton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-// 2. 드롭다운 메뉴 컴포넌트 import (shadcn/ui)
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import { categories, posts, users } from '@/data/mockData';
-
-interface UserType {
-  id: string;
-  name: string;
-  avatar?: string;
-}
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function PostDetailPage({ params }: PageProps) {
-  const { id } = use(params);
-  const [isLiked, setIsLiked] = useState(false);
+export default async function PostDetailPage({ params }: PageProps) {
+  const session = await auth();
 
-  const post = posts.find((p) => p.id === id);
-  const category = post
-    ? categories.find((c) => c.id === post.categoryId)
-    : null;
-  const author = (users as UserType[])?.find((u) => u.id === post?.authorId);
+  const { id } = await params;
+  const postId = Number(id);
+  const currentUserId = session?.user?.id ? Number(session.user.id) : null;
 
-  const formatDate = (date: Date | string) => {
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: {
+      writer: true,
+      category: true,
+      comments: {
+        orderBy: { createdAt: 'asc' },
+        include: {
+          writer: true,
+        },
+      },
+      postLikes: {
+        where: { userId: currentUserId || 0 },
+      },
+      _count: {
+        select: { postLikes: true },
+      },
+    },
+  });
+
+  if (!post) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h2 className="font-bold text-2xl">게시글을 찾을 수 없습니다</h2>
+        <Button asChild className="mt-4" variant="outline">
+          <Link href="/posts">목록으로</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('ko-KR', {
       year: 'numeric',
       month: 'long',
@@ -57,36 +61,25 @@ export default function PostDetailPage({ params }: PageProps) {
     });
   };
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    toast(isLiked ? '좋아요 취소' : '좋아요!', {
-      description: isLiked ? '좋아요를 취소했습니다.' : '이 글을 좋아합니다.',
-    });
-  };
-
-  // 3. 퍼블리싱용 삭제 핸들러 (기능은 없고 알림만)
-  const handleDelete = () => {
-    if (confirm('정말 삭제하시겠습니까?')) {
-      toast.success('삭제되었습니다', {
-        description: '게시글이 목록에서 삭제되었습니다.',
-      });
-    }
-  };
-
-  if (!post) {
-    return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="mb-4 font-bold text-2xl">게시글을 찾을 수 없습니다</h1>
-        <Button asChild>
-          <Link href="/posts">목록으로 돌아가기</Link>
-        </Button>
-      </div>
-    );
-  }
+  const formattedComments = post.comments.map((c) => ({
+    id: String(c.id),
+    writerId: c.writerId,
+    author: {
+      name: c.writer.name,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.writer.name}`,
+    },
+    content: c.content,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
+    parentId: c.parentId ? String(c.parentId) : null,
+    isDeleted: c.isDeleted,
+  }));
+  const likesCount = post._count.postLikes;
+  // 내가 좋아요를 눌렀는지
+  const isLiked = post.postLikes.length > 0;
 
   return (
     <article className="container mx-auto max-w-4xl px-4 py-12">
-      {/* 4. 상단 네비게이션 영역 수정 (Flex 적용) */}
       <div className="mb-8 flex items-center justify-between">
         <Link
           href="/posts"
@@ -96,42 +89,21 @@ export default function PostDetailPage({ params }: PageProps) {
           목록으로
         </Link>
 
-        {/* ✨ 수정/삭제 드롭다운 메뉴 */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <MoreVertical className="h-5 w-5" />
-              <span className="sr-only">메뉴 열기</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {/* 수정하기 링크: 제안하신 쿼리 스트링 방식 적용 */}
-            <DropdownMenuItem asChild className="cursor-pointer">
-              <Link
-                href={`/admin/posts/edit?id=${id}`}
-                className="flex w-full items-center"
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                수정하기
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={handleDelete}
-              className="cursor-pointer text-destructive focus:text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              삭제하기
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* 수정/삭제 메뉴 */}
+        <PostDetailActions postId={String(post.id)} />
       </div>
 
       <header className="mb-8 animate-fade-in">
-        {/* ... (기존 헤더 내용 유지) ... */}
-        {category && (
+        {post.category && (
           <div className="mb-4">
-            <CategoryBadge category={category} size="md" />
+            <CategoryBadge
+              category={{
+                ...post.category,
+                id: String(post.category.id),
+                postCount: 0,
+              }}
+              size="md"
+            />
           </div>
         )}
         <h1 className="mb-4 font-bold text-3xl md:text-4xl">{post.title}</h1>
@@ -139,10 +111,12 @@ export default function PostDetailPage({ params }: PageProps) {
         <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={author?.avatar} />
-              <AvatarFallback>{author?.name?.[0] || 'U'}</AvatarFallback>
+              <AvatarImage
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.writer.name}`}
+              />
+              <AvatarFallback>{post.writer.name[0]}</AvatarFallback>
             </Avatar>
-            <span>{author?.name || '알 수 없음'}</span>
+            <span>{post.writer.name}</span>
           </div>
 
           <Separator orientation="vertical" className="h-4" />
@@ -152,7 +126,7 @@ export default function PostDetailPage({ params }: PageProps) {
             <span>{formatDate(post.createdAt)}</span>
           </div>
 
-          {post.updatedAt > post.createdAt && (
+          {post.updatedAt.getTime() > post.createdAt.getTime() && (
             <>
               <Separator orientation="vertical" className="h-4" />
               <div className="flex items-center gap-1">
@@ -164,11 +138,9 @@ export default function PostDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* ... (이하 본문 및 댓글 영역 기존 코드 유지) ... */}
       <div className="prose prose-lg dark:prose-invert mb-12 max-w-none animate-slide-up">
         <div className="rounded-xl border border-border bg-card p-8">
           {post.content.split('\n').map((paragraph, idx) => {
-            // ... 기존 렌더링 로직 ...
             const key = `p-${idx}`;
             if (paragraph.startsWith('```')) return null;
             if (paragraph.startsWith('## ')) {
@@ -196,17 +168,14 @@ export default function PostDetailPage({ params }: PageProps) {
       </div>
 
       <div className="mb-12 flex items-center justify-between border-border border-y py-6">
-        {/* ... (좋아요/댓글 버튼 기존 코드 유지) ... */}
         <div className="flex items-center gap-4">
-          <Button
-            variant={'outline'}
-            size="lg"
-            onClick={handleLike}
-            className={`gap-2 ${isLiked ? 'border-primary/10 bg-primary/10 text-primary' : ''}`}
-          >
-            <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
-            {post.likes + (isLiked ? 1 : 0)}
-          </Button>
+          <PostLikeButton
+            postId={postId}
+            initialLikes={likesCount}
+            initialIsLiked={isLiked}
+            userId={currentUserId}
+          />
+
           <Button variant="outline" size="lg" className="gap-2">
             <MessageCircle className="h-5 w-5" />
             댓글
@@ -215,7 +184,12 @@ export default function PostDetailPage({ params }: PageProps) {
       </div>
 
       <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-        <CommentList />
+        <CommentList
+          initialComments={formattedComments}
+          postId={postId}
+          currentUserId={Number(session?.user?.id)}
+          isAdmin={session?.user?.role === 'ADMIN'}
+        />
       </div>
     </article>
   );

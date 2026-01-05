@@ -1,42 +1,61 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
-// 퍼블리싱용 임시 타입 (나중에 lib/validator.ts로 교체하세요)
+// 1.5초 대기
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
 type ValidError = {
   error: Record<string, string | undefined>;
   data: Record<string, string | undefined | null>;
+  success?: boolean; // 성공 여부
 };
 
-// 껍데기뿐인 서버 액션 (DB 없이 동작)
 export const writePostAction = async (
-  prevState: ValidError | undefined,
+  _prevState: ValidError | undefined,
   formData: FormData,
 ): Promise<ValidError | undefined> => {
-  // 1. 네트워크 딜레이 흉내 (1초 기다림 -> 로딩바 확인용)
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: { title: '로그인이 필요한 서비스입니다.' }, data: {} };
+  }
 
-  console.log('✅ [Mock Server] 폼 데이터 수신 성공!');
-  console.log('제목:', formData.get('title'));
-  console.log('내용:', formData.get('content'));
-  console.log('카테고리:', formData.get('categoryId'));
-
-  // 2. 간단한 유효성 검사 흉내 (제목 비어있으면 에러 뱉기)
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
+  const categoryId = formData.get('categoryId') as string;
 
-  if (!title || title.trim() === '') {
-    return {
-      error: { title: '제목을 입력해주세요! (테스트 에러)' },
+  const errors: Record<string, string> = {};
+  if (!title) errors.title = '제목을 입력해주세요.';
+  if (!content) errors.content = '내용을 입력해주세요.';
+  if (!categoryId) errors.categoryId = '카테고리를 선택해주세요.';
+
+  if (Object.keys(errors).length > 0) {
+    return { error: errors, data: { title, content, categoryId } };
+  }
+
+  try {
+    await prisma.post.create({
       data: {
         title,
         content,
-        categoryId: formData.get('categoryId') as string,
+        categoryId: Number(categoryId),
+        writerId: Number(session.user.id),
       },
+    });
+
+    revalidatePath('/posts');
+
+    await sleep(1500);
+  } catch (e) {
+    console.error(e);
+    return {
+      error: { title: 'DB 저장 중 오류가 발생했습니다.' },
+      data: { title, content, categoryId },
     };
   }
 
-  // 3. 성공한 척하고 목록으로 이동
-  console.log('🎉 글 저장 성공 (흉내)');
   redirect('/posts');
 };

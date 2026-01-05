@@ -1,0 +1,20 @@
+services:
+  localdb:
+    container_name: hanaro-mysql
+    image: mysql:8.0
+    ports:
+      - 3308:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: TestdbRoot
+      MYSQL_DATABASE: hanadb
+      MYSQL_USER: hanaro
+      MYSQL_PASSWORD: 12345678
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --log_bin_trust_function_creators=1
+      - --default-time-zone=Asia/Seoul
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
