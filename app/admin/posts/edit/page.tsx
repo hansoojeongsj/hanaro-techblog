@@ -1,4 +1,4 @@
-import { EditForm } from '@/components/blog/EditForm';
+import { EditForm } from '@/components/admin/EditForm';
 import { prisma } from '@/lib/prisma';
 
 export default async function EditPage({

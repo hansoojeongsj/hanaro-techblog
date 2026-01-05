@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { WriteForm } from '@/components/blog/WriteForm';
+import { WriteForm } from '@/components/admin/WriteForm';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 export default async function WritePage() {

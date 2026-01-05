@@ -6,7 +6,7 @@ import {
   createComment,
   deleteComment,
   updateComment,
-} from '@/app/posts/[id]/comment.action';
+} from '@/app/(blog)/posts/[id]/comment.action';
 import { CommentForm } from './CommentForm';
 import { CommentItem, type CommentType } from './CommentItem';
 
