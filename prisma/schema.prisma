@@ -63,6 +63,7 @@ model Post {
 
   @@index([writerId], map: "fk_Post_writer")
   @@index([categoryId], map: "fk_Post_category")
+  @@fulltext([title, content])
 }
 
 model Comment {
