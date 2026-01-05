@@ -24,22 +24,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-interface ProfileToggleProps {
+type ProfileToggleProps = {
   isLoggedIn: boolean;
   user?: {
-    id: string; // id 추가 (탈퇴 시 필요)
+    id: string;
     name: string;
     email: string;
     avatar?: string;
     role: 'ADMIN' | 'USER';
   };
-}
+};
 
 export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
   const [isPending, setIsPending] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // 로그인 안 했을 때
   if (!isLoggedIn || !user) {
     return (
       <Button variant="outline" size="default" asChild>
@@ -51,23 +50,20 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
     );
   }
 
-  // 회원 탈퇴 핸들러
   const handleWithdrawal = async () => {
-    if (!user.id) return;
+    if (!user?.id) return;
 
     setIsPending(true);
     try {
       const result = await withdrawUserAction(Number(user.id));
-
       if (result.success) {
-        toast.success('탈퇴 처리가 완료되었습니다. 이용해 주셔서 감사합니다.');
-        setIsDialogOpen(false);
-        await signOut({ callbackUrl: '/' });
-      } else {
-        toast.error(result.message);
+        toast.success('탈퇴가 완료되었습니다.');
+        signOut({ callbackUrl: '/' });
+        return;
       }
-    } catch (_) {
-      toast.error('탈퇴 처리 중 오류가 발생했습니다.');
+      toast.error(result.message);
+    } catch {
+      toast.error('오류가 발생했습니다.');
     } finally {
       setIsPending(false);
     }

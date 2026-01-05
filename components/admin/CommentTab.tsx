@@ -125,6 +125,7 @@ export function CommentTab({
         <div className="relative w-full max-w-sm max-sm:max-w-xs">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
+            name="search"
             placeholder="댓글 내용으로 검색하세요."
             value={inputValue}
             onChange={handleSearch}

@@ -124,6 +124,7 @@ export function PostTab({
         <div className="relative mr-2 w-full max-w-sm">
           <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
           <Input
+            name="search"
             placeholder="제목으로 검색하세요."
             value={inputValue}
             onChange={handleSearch}

@@ -1,28 +1,34 @@
-import { EditForm } from '@/components/admin/EditForm';
+import { redirect } from 'next/navigation';
+import { PostForm } from '@/components/admin/PostForm';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { handlePostAction } from '../post.action';
 
 export default async function EditPage({
   searchParams,
 }: {
   searchParams: Promise<{ id: string }>;
 }) {
+  const session = await auth();
+  if (!session || session.user.role !== 'ADMIN') redirect('/login');
+
   const { id } = await searchParams;
   const postId = Number(id);
 
-  // 진짜 DB에서 글 정보 가져오기
-  const post = await prisma.post.findUnique({
-    where: { id: postId },
-  });
+  const [post, categories] = await Promise.all([
+    prisma.post.findUnique({ where: { id: postId } }),
+    prisma.category.findMany(),
+  ]);
 
-  // 카테고리 목록 가져오기
-  const categories = await prisma.category.findMany();
-
-  if (!post) return <div>글을 찾을 수 없습니다.</div>;
+  if (!post)
+    return <div className="p-20 text-center">글을 찾을 수 없습니다.</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <EditForm
-        initialPost={{
+      <h1 className="mx-auto mb-8 max-w-4xl font-bold text-3xl">글 수정하기</h1>
+      <PostForm
+        action={handlePostAction}
+        initialData={{
           id: String(post.id),
           title: post.title,
           content: post.content,
@@ -31,8 +37,9 @@ export default async function EditPage({
         categories={categories.map((c) => ({
           ...c,
           id: String(c.id),
-          color: c.color === null ? undefined : c.color,
+          color: c.color ?? undefined,
         }))}
+        submitLabel="수정 완료"
       />
     </div>
   );

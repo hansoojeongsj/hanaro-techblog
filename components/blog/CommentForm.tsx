@@ -76,6 +76,7 @@ export function CommentForm({
 
           <Textarea
             ref={textareaRef}
+            name="comment"
             placeholder={placeholder}
             value={content}
             onChange={(e) => setContent(e.target.value)}

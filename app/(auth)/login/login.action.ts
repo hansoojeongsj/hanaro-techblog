@@ -1,5 +1,3 @@
-// app/(auth)/login/login.action.ts
-
 'use server';
 
 import { AuthError } from 'next-auth';

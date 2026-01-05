@@ -65,6 +65,7 @@ export function PostsClient({ initialPosts, categories }: PostsClientProps) {
           <Search className="-translate-y-1/2 absolute top-1/2 left-4 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
+            name="search"
             placeholder="제목 또는 내용으로 검색해주세요."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

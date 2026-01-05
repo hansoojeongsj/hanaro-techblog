@@ -18,6 +18,7 @@ export async function createComment(formData: {
     },
   });
 
+  revalidatePath('/');
   revalidatePath(`/posts/${formData.postId}`);
 }
 

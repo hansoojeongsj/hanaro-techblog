@@ -23,7 +23,7 @@ export default async function AdminPage({
   if (session?.user?.role !== 'ADMIN') return <div>권한이 없습니다.</div>;
   const params = await searchParams;
   const activeTab = params.tab || 'users';
-  const searchTerm = params.search || ''; // 검색어 추출
+  const searchTerm = params.search || '';
   const pageSize = 20;
 
   // 통계 데이터 조회
@@ -35,10 +35,8 @@ export default async function AdminPage({
 
   let content: React.ReactNode;
 
-  // 탭별 전체 검색 쿼리 적용
   if (activeTab === 'users') {
     const page = Number(params.page) || 1;
-    // 검색 조건: 이름 또는 이메일에 포함된 경우
     const where = searchTerm
       ? {
           OR: [
@@ -55,7 +53,7 @@ export default async function AdminPage({
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
-      prisma.user.count({ where }), // 검색된 결과의 전체 개수
+      prisma.user.count({ where }),
     ]);
 
     content = (
