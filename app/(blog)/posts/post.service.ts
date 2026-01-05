@@ -86,6 +86,7 @@ export const getPostDetail = async (
       updatedAt: c.updatedAt,
       parentId: c.parentId ? String(c.parentId) : null,
       isWriterDeleted: c.writer.isDeleted,
+      isDeleted: c.isDeleted,
     })),
   };
 };

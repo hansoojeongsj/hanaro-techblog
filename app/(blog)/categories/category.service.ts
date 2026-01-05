@@ -19,6 +19,7 @@ export type CategoryBase = {
   icon?: string | null;
   description?: string | null;
   postCount: number;
+  color?: string | null;
 };
 
 export type CategoryWithLatest = CategoryBase & {

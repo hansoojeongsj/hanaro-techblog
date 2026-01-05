@@ -96,7 +96,7 @@ export async function restoreUserAction(userId: number) {
       where: { id: userId },
       data: {
         isDeleted: false,
-        deletedAt: null, // 삭제 기록 초기화
+        deletedAt: null,
       },
     });
 
