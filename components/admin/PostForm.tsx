@@ -8,7 +8,7 @@ import type {
   Category,
   FormState,
   PostFormData,
-} from '@/app/admin/posts/post.types';
+} from '@/app/admin/post/post.types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
