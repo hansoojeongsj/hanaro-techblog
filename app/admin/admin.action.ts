@@ -32,6 +32,8 @@ export async function withdrawUserAction(userId: number) {
       }),
     ]);
 
+    revalidatePath('/');
+    revalidatePath('/categories');
     revalidatePath('/admin');
     return {
       success: true,

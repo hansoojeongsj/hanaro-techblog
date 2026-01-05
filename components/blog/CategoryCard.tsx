@@ -15,19 +15,15 @@ type Category = {
   slug: string;
   postCount: number;
   icon?: string | null;
+  description?: string | null;
 };
 
-interface CategoryCardProps {
+type CategoryCardProps = {
   category: Category;
   latestPostTitle?: string;
-  categoryDescriptions?: string;
-}
+};
 
-export function CategoryCard({
-  category,
-  latestPostTitle,
-  categoryDescriptions,
-}: CategoryCardProps) {
+export function CategoryCard({ category, latestPostTitle }: CategoryCardProps) {
   return (
     <Link href={`/categories/${category.slug}`} className="block h-full">
       <Card className="group flex h-full flex-col transition-all duration-300 hover:border-primary/50 hover:shadow-md hover:shadow-primary/5">
@@ -50,7 +46,7 @@ export function CategoryCard({
         </CardHeader>
 
         <CardContent className="flex-1">
-          <CardDescription>{categoryDescriptions || ''}</CardDescription>
+          <CardDescription>{category.description || ''}</CardDescription>
         </CardContent>
 
         {latestPostTitle ? (

@@ -46,6 +46,8 @@ export const writePostAction = async (
       },
     });
 
+    revalidatePath('/');
+    revalidatePath('/categories');
     revalidatePath('/posts');
 
     await sleep(1500);
