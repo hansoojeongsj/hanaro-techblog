@@ -63,7 +63,7 @@ export function PostTab({
       totalPages={totalPages}
       extraActions={
         <Button asChild>
-          <Link href="/admin/posts/write">
+          <Link href="/admin/post/write">
             <Plus className="mr-1 h-4 w-4" /> 새 글
           </Link>
         </Button>

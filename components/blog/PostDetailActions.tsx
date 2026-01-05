@@ -66,7 +66,7 @@ export function PostDetailActions({ postId }: PostDetailActionsProps) {
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link
-                href={`/admin/posts/edit?id=${postId}`}
+                href={`/admin/post/edit?id=${postId}`}
                 className="flex w-full items-center"
               >
                 <Pencil className="mr-2 h-4 w-4" />

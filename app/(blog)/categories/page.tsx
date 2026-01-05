@@ -21,14 +21,7 @@ export default async function CategoriesPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {categoriesData.map((data) => (
-          <CategoryCard
-            key={data.id}
-            category={{
-              ...data,
-              id: String(data.id),
-            }}
-            latestPostTitle={data.latestPostTitle}
-          />
+          <CategoryCard key={data.id} category={data} />
         ))}
       </div>
     </div>
