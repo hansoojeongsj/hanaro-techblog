@@ -45,7 +45,6 @@ export async function getAllPosts(query?: string): Promise<PostForList[]> {
     title: post.title,
     content: post.content,
     createdAt: post.createdAt,
-    // blog.type.ts의 PostCardData 구조에 맞게 수정
     writer: {
       id: post.writer.id,
       name: post.writer.name,
