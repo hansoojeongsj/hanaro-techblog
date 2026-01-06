@@ -1,18 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import type { CategoryBase } from '@/app/(blog)/categories/category.service';
 
-// 임시
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-  postCount: number;
-};
-
-interface CategoryBadgeProps {
-  category: Category;
+type CategoryBadgeProps = {
+  category: CategoryBase;
   showCount?: boolean;
   size?: 'sm' | 'md' | 'lg';
-}
+};
 
 const categoryColors: Record<string, string> = {
   javascript: 'bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20',
@@ -39,7 +34,6 @@ export function CategoryBadge({
     md: 'px-3 py-1 text-sm',
     lg: 'px-4 py-1.5 text-base',
   };
-
   return (
     <Link
       href={`/categories/${category.slug}`}

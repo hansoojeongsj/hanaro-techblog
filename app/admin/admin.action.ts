@@ -5,12 +5,12 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 /**
- * 유저 삭제 액션 (소프트 삭제)
+ * 유저 탈퇴 액션 (7일 유예 기간 시작)
  */
 export async function withdrawUserAction(userId: number) {
   try {
     const session = await auth();
-    // 관리자거나 본인인 경우
+
     if (
       !session ||
       (session.user.role !== 'ADMIN' && Number(session.user.id) !== userId)
@@ -18,30 +18,64 @@ export async function withdrawUserAction(userId: number) {
       return { success: false, message: '권한이 없습니다.' };
     }
 
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: userId },
-        data: {
-          isDeleted: true,
-          deletedAt: new Date(),
-        },
-      }),
-      prisma.post.updateMany({
-        where: { writerId: userId },
-        data: { isDeleted: true },
-      }),
-      prisma.comment.updateMany({
-        where: { writerId: userId },
-        data: { isDeleted: true },
-      }),
-    ]);
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
 
-    return { success: true, message: '탈퇴 처리가 완료되었습니다.' };
+    revalidatePath('/', 'layout');
+
+    return {
+      success: true,
+      message: '탈퇴 유예 처리가 완료되었습니다. (7일 후 정보 파기)',
+    };
   } catch (error) {
     console.error('유저 삭제 에러:', error);
     return { success: false, message: '탈퇴 처리 중 오류 발생' };
   }
-} /**
+}
+
+/**
+ * 7일 경과 유저 익명화 (영구 탈퇴 및 재가입 허용 처리)
+ */
+export async function anonymizeOldUsersAction() {
+  try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    // 7일이 지났고 아직 익명화되지 않은 유저 조회
+    const targets = await prisma.user.findMany({
+      where: {
+        isDeleted: true,
+        deletedAt: { lte: sevenDaysAgo },
+        NOT: { email: { startsWith: 'deleted_' } },
+      },
+    });
+
+    if (targets.length === 0) return;
+
+    const tasks = targets.map((user) =>
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          name: '탈퇴한 사용자',
+          email: `deleted_${user.id}_${Date.now()}@deleted.com`,
+          passwd: null,
+          image: null,
+        },
+      }),
+    );
+
+    await Promise.all(tasks);
+    console.log(`${targets.length}명의 유저 정보가 익명화되었습니다.`);
+  } catch (error) {
+    console.error('익명화 작업 중 에러:', error);
+  }
+}
+
+/**
  * 유저 복구 액션
  */
 export async function restoreUserAction(userId: number) {
@@ -54,11 +88,11 @@ export async function restoreUserAction(userId: number) {
       where: { id: userId },
       data: {
         isDeleted: false,
-        deletedAt: null, // 삭제 기록 초기화
+        deletedAt: null,
       },
     });
 
-    revalidatePath('/admin');
+    revalidatePath('/', 'layout');
     return { success: true, message: '회원 계정이 성공적으로 복구되었습니다.' };
   } catch (error) {
     console.error('유저 복구 에러:', error);
@@ -81,9 +115,7 @@ export async function deletePostAction(postId: number) {
       data: { isDeleted: true },
     });
 
-    revalidatePath('/admin');
-    revalidatePath('/posts');
-
+    revalidatePath('/', 'layout');
     return { success: true, message: '게시글이 삭제 처리되었습니다.' };
   } catch (error) {
     console.error('게시글 삭제 에러:', error);
@@ -107,6 +139,8 @@ export async function deleteCommentAction(commentId: number) {
     });
 
     revalidatePath('/admin');
+    revalidatePath('/posts');
+
     return { success: true, message: '댓글이 삭제 처리되었습니다.' };
   } catch (error) {
     console.error('댓글 삭제 에러:', error);

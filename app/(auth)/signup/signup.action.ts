@@ -3,17 +3,15 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 
-// 리턴값의 타입 정의
 export type SignUpState = {
   message: string;
-  type: 'success' | 'error' | ''; // 성공, 에러, 혹은 초기값
+  type: 'success' | 'error' | '';
 };
 
 export async function signUp(
-  _prevState: SignUpState, // 타입 적용 + 안 쓰는 변수는 _ 붙이기
+  _prevState: SignUpState,
   formData: FormData,
 ): Promise<SignUpState> {
-  // 리턴 타입
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -22,16 +20,33 @@ export async function signUp(
     return { type: 'error', message: '모든 항목을 입력해주세요.' };
   }
 
-  // 이메일 중복 확인
-  const exists = await prisma.user.findUnique({ where: { email } });
+  const exists = await prisma.user.findFirst({
+    where: {
+      email,
+      isDeleted: false,
+    },
+  });
+
   if (exists) {
-    return { type: 'error', message: '이미 가입된 이메일입니다.' };
+    return { type: 'error', message: '이미 사용 중인 이메일입니다.' };
   }
 
-  // 비밀번호 해싱
+  const deletedUser = await prisma.user.findFirst({
+    where: {
+      email,
+      isDeleted: true,
+    },
+  });
+
+  if (deletedUser) {
+    return {
+      type: 'error',
+      message: '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.',
+    };
+  }
+
   const hashed = await bcrypt.hash(password, 10);
 
-  // 유저 생성
   await prisma.user.create({
     data: {
       name,

@@ -6,31 +6,26 @@ generator client {
 datasource db {
   provider = "mysql"
 }
-// Enums
+
 enum Role {
   USER
   ADMIN
 }
-
-// 모델 정의
-
 model User {
   id        Int       @id @default(autoincrement()) @db.UnsignedInt
   name      String    @db.VarChar(31)
   email     String    @unique @db.VarChar(255)
-  passwd    String?   @db.VarChar(256) // 소셜 로그인은 null 가능
+  passwd    String?   @db.VarChar(256)
   image     String?   @db.VarChar(255)
   role      Role      @default(USER)
-  provider  String?   @default("credentials") @db.VarChar(31)
+  provider  String?   @default("credentials") @db.VarChar(31) 
+
   isDeleted   Boolean   @default(false)
 
   createdAt DateTime  @default(now()) @db.Timestamp(0)
   updatedAt DateTime  @default(now()) @updatedAt @db.Timestamp(0)
   deletedAt DateTime? @db.Timestamp(0)
 
-  // 관계 설정
-  accounts  Account[]
-  sessions  Session[]
   posts     Post[]
   comments  Comment[]
   postLikes PostLike[]
@@ -41,7 +36,6 @@ model Category {
   name        String  @unique @db.VarChar(31)
   slug        String  @unique @db.VarChar(31)
   icon        String? @db.VarChar(31)
-  color       String? @db.VarChar(31)
   description String? @db.VarChar(255)
 
   posts Post[]
@@ -56,12 +50,11 @@ model Post {
   isDeleted Boolean @default(false)
 
   writerId   Int @db.UnsignedInt
-  categoryId Int @db.UnsignedTinyInt // Category id 타입과 일치
+  categoryId Int @db.UnsignedTinyInt 
 
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
   
-  // 관계 설정
   writer    User       @relation(fields: [writerId], references: [id], onDelete: Cascade, map: "fk_Post_writer")
   category  Category   @relation(fields: [categoryId], references: [id], onDelete: Restrict, map: "fk_Post_category")
   comments  Comment[]
@@ -69,6 +62,8 @@ model Post {
 
   @@index([writerId], map: "fk_Post_writer")
   @@index([categoryId], map: "fk_Post_category")
+  @@fulltext([title])
+  @@fulltext([title, content])
 }
 
 model Comment {
@@ -83,20 +78,18 @@ model Comment {
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
 
-  // 관계 설정
   writer   User     @relation(fields: [writerId], references: [id], onDelete: Cascade, map: "fk_Comment_writer")
   post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade, map: "fk_Comment_post")
   
-  // 대댓글 (Self Relation)
   parent   Comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade, map: "fk_Comment_parent")
   children Comment[] @relation("ParentChild")
 
   @@index([writerId], map: "fk_Comment_writer")
   @@index([postId], map: "fk_Comment_post")
   @@index([parentId], map: "fk_Comment_parent")
+  @@fulltext([content])
 }
 
-// 복합키를 사용하는 좋아요 테이블
 model PostLike {
   userId Int @db.UnsignedInt
   postId Int @db.UnsignedInt
@@ -104,44 +97,10 @@ model PostLike {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_PostLike_user")
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade, map: "fk_PostLike_post")
 
-  @@id([userId, postId]) // Primary Key (userId, postId)
+  @@id([userId, postId])
   @@index([postId], map: "fk_PostLike_post")
 }
 
-// Prisma는 @id가 필수이므로 value를 PK로 설정
 model StopWord {
   value String @id @db.VarChar(31)
-}
-
-// --- NextAuth 테이블 ---
-
-model Account {
-  id                Int     @id @default(autoincrement()) @db.UnsignedInt
-  userId            Int     @db.UnsignedInt
-  type              String  @db.VarChar(31)
-  provider          String  @db.VarChar(31)
-  providerAccountId String  @db.VarChar(255)
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?    @db.UnsignedInt
-  token_type        String? @db.VarChar(31)
-  scope             String? @db.VarChar(255)
-  id_token          String? @db.Text
-  session_state     String? @db.VarChar(255)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_Account_user")
-
-  @@unique([provider, providerAccountId], map: "uniq_Account_provider")
-  @@index([userId], map: "fk_Account_user")
-}
-
-model Session {
-  id           Int      @id @default(autoincrement()) @db.UnsignedInt
-  sessionToken String   @unique(map: "uniq_Session_token") @db.VarChar(255)
-  userId       Int      @db.UnsignedInt
-  expires      DateTime @db.Timestamp(0)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_Session_user")
-
-  @@index([userId], map: "fk_Session_user")
 }

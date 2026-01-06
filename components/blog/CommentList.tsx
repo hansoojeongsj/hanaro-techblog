@@ -2,28 +2,27 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import type { Comment, CurrentUser } from '@/app/(blog)/blog.type';
 import {
   createComment,
   deleteComment,
   updateComment,
 } from '@/app/(blog)/posts/[id]/comment.action';
 import { CommentForm } from './CommentForm';
-import { CommentItem, type CommentType } from './CommentItem';
+import { CommentItem } from './CommentItem';
 
-interface CommentListProps {
-  initialComments: CommentType[];
+type CommentListProps = {
+  initialComments: Comment[];
   postId: number;
-  currentUserId: number;
-  isAdmin: boolean;
-}
+  currentUser: CurrentUser | null;
+};
 
 export function CommentList({
   initialComments,
   postId,
-  currentUserId,
-  isAdmin,
+  currentUser,
 }: CommentListProps) {
-  const [comments, setComments] = useState<CommentType[]>(initialComments);
+  const [comments, setComments] = useState<Comment[]>(initialComments);
   const [replyToId, setReplyToId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,12 +48,16 @@ export function CommentList({
   };
 
   const handleAddComment = async (content: string) => {
+    if (!currentUser || !currentUser.id) {
+      toast.error('로그인이 필요합니다.');
+      return;
+    }
     try {
       await createComment({
         postId,
         content,
         parentId: replyToId ? Number(replyToId) : null,
-        writerId: currentUserId,
+        writerId: Number(currentUser.id),
       });
       setReplyToId(null);
       toast.success('댓글이 등록되었습니다.');
@@ -84,6 +87,7 @@ export function CommentList({
         onSubmit={handleAddComment}
         replyToId={replyToId}
         onCancelReply={() => setReplyToId(null)}
+        currentUser={currentUser}
       />
 
       <div className="space-y-6">
@@ -95,8 +99,7 @@ export function CommentList({
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
               onEditStart={handleEditStart}
-              currentUserId={currentUserId}
-              isAdmin={isAdmin}
+              currentUser={currentUser}
             />
             {getReplies(comment.id).map((reply) => (
               <CommentItem
@@ -107,8 +110,7 @@ export function CommentList({
                 onDelete={handleDeleteComment}
                 onEditStart={handleEditStart}
                 isReply={true}
-                currentUserId={currentUserId}
-                isAdmin={isAdmin}
+                currentUser={currentUser}
               />
             ))}
           </div>

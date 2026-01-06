@@ -11,9 +11,9 @@ type CategoryWithCount = {
   };
 };
 
-interface CategoryListProps {
+type CategoryListProps = {
   categories: CategoryWithCount[];
-}
+};
 
 export function CategoryList({ categories }: CategoryListProps) {
   return (

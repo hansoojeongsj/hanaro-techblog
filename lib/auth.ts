@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Github from 'next-auth/providers/github';
+import Google from 'next-auth/providers/google';
 import { prisma } from './prisma';
 import { comparePassword } from './validator';
 
@@ -35,6 +36,12 @@ export const {
           throw new Error('가입되지 않은 이메일입니다.');
         }
 
+        if (user.isDeleted) {
+          throw new Error(
+            '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.',
+          );
+        }
+
         if (!user.passwd) {
           throw new Error('소셜 로그인으로 가입된 계정입니다.');
         }
@@ -53,37 +60,55 @@ export const {
         };
       },
     }),
-    Github({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-    }),
+    Github,
+    Google,
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === 'credentials') return true;
-      if (account?.provider === 'github') {
-        try {
-          const email = user.email;
-          if (!email) return false;
-          const existingUser = await prisma.user.findUnique({
-            where: { email },
-          });
-          if (!existingUser) {
-            await prisma.user.create({
-              data: {
-                email,
-                name: user.name || 'User',
-                image: user.image,
-                role: 'USER',
-              },
-            });
+      if (!user.email) return false;
+
+      let dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (account?.provider !== 'credentials') {
+        if (dbUser) {
+          if (dbUser.isDeleted) {
+            throw new Error(
+              '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.',
+            );
           }
-          return true;
-        } catch (error) {
-          console.error('Social Login Error:', error);
-          return false;
+
+          const savedProvider = dbUser.provider;
+          const currentProvider = account?.provider;
+
+          if (savedProvider && savedProvider !== currentProvider) {
+            const providerName =
+              savedProvider === 'github'
+                ? '깃허브'
+                : savedProvider === 'google'
+                  ? '구글'
+                  : '이메일';
+            throw new Error(
+              `해당 이메일은 이미 ${providerName}로 가입되어 있습니다. ${providerName}로 로그인해 주세요.`,
+            );
+          }
+        } else {
+          dbUser = await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name || user.email.split('@')[0],
+              image: user.image,
+              role: 'USER',
+              provider: account?.provider,
+            },
+          });
         }
+
+        user.id = String(dbUser.id);
+        user.role = dbUser.role;
       }
+
       return true;
     },
     async jwt({ token, user, trigger, session }) {
@@ -91,12 +116,17 @@ export const {
         token.id = user.id;
         token.role = user.role;
       }
-      if (trigger === 'update' && session) return { ...token, ...session };
+
+      if (trigger === 'update' && session) {
+        return { ...token, ...session };
+      }
+
       return token;
     },
+
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
+      if (token && session.user) {
+        session.user.id = String(token.id);
         session.user.role = token.role as 'ADMIN' | 'USER';
       }
       return session;

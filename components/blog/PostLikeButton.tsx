@@ -3,50 +3,46 @@
 import { Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import type { CurrentUser } from '@/app/(blog)/blog.type';
 import { togglePostLike } from '@/app/(blog)/posts/[id]/like.action';
 import { Button } from '@/components/ui/button';
 
-interface PostLikeButtonProps {
+type PostLikeButtonProps = {
   postId: number;
-  userId: number | null | undefined;
+  currentUser: CurrentUser | null;
   initialLikes: number;
   initialIsLiked: boolean;
-}
+};
 
 export function PostLikeButton({
   postId,
-  userId,
+  currentUser,
   initialLikes,
   initialIsLiked,
 }: PostLikeButtonProps) {
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likes, setLikes] = useState(initialLikes);
 
-  // 서버 데이터가 바뀌면(다른 사람이 눌렀을 때 등) 상태 동기화
   useEffect(() => {
     setIsLiked(initialIsLiked);
     setLikes(initialLikes);
   }, [initialIsLiked, initialLikes]);
 
   const handleLike = async () => {
-    // async 추가
-    if (!userId) {
+    if (!currentUser || !currentUser.id) {
       toast.error('로그인이 필요합니다!');
       return;
     }
 
-    // 화면 먼저
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
     setLikes((prev) => (newLikedState ? prev + 1 : prev - 1));
 
     try {
-      // 진짜 서버에 저장
-      await togglePostLike(postId, userId);
+      await togglePostLike(postId);
 
       toast(newLikedState ? '좋아요!' : '좋아요 취소');
     } catch (_) {
-      // 에러 나면 다시 원래대로
       setIsLiked(!newLikedState);
       setLikes(initialLikes);
       toast.error('오류가 발생했습니다.');

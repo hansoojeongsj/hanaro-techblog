@@ -6,6 +6,8 @@ import { UserTab } from '@/components/admin/UserTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { filterStopWords } from '@/lib/search';
+import { anonymizeOldUsersAction } from './admin.action';
 
 export default async function AdminPage({
   searchParams,
@@ -20,13 +22,14 @@ export default async function AdminPage({
 }) {
   const session = await auth();
   if (session?.user?.role !== 'ADMIN') return <div>권한이 없습니다.</div>;
-
   const params = await searchParams;
   const activeTab = params.tab || 'users';
-  const searchTerm = params.search || ''; // 검색어 추출
+  const rawSearchTerm = params.search || '';
+
+  const searchTerm = await filterStopWords(rawSearchTerm);
+
   const pageSize = 20;
 
-  // 통계 데이터 조회
   const [userCount, postCount, commentCount] = await Promise.all([
     prisma.user.count({ where: { isDeleted: false } }),
     prisma.post.count({ where: { isDeleted: false } }),
@@ -35,18 +38,22 @@ export default async function AdminPage({
 
   let content: React.ReactNode;
 
-  // 탭별 전체 검색 쿼리 적용
   if (activeTab === 'users') {
     const page = Number(params.page) || 1;
-    // 검색 조건: 이름 또는 이메일에 포함된 경우
-    const where = searchTerm
-      ? {
-          OR: [
-            { name: { contains: searchTerm } },
-            { email: { contains: searchTerm } },
-          ],
-        }
-      : {};
+    const where =
+      rawSearchTerm.trim() !== ''
+        ? {
+            AND: [
+              { isDeleted: false },
+              {
+                OR: [
+                  { name: { contains: rawSearchTerm } },
+                  { email: { contains: rawSearchTerm } },
+                ],
+              },
+            ],
+          }
+        : {};
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -55,22 +62,25 @@ export default async function AdminPage({
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
-      prisma.user.count({ where }), // 검색된 결과의 전체 개수
+      prisma.user.count({ where }),
     ]);
 
     content = (
       <UserTab
         initialUsers={users}
         currentPage={page}
-        totalPages={Math.ceil(total / pageSize)}
+        totalPages={Math.max(1, Math.ceil(total / pageSize))}
       />
     );
   } else if (activeTab === 'posts') {
     const page = Number(params.postPage) || 1;
     const where = searchTerm
       ? {
-          title: { contains: searchTerm },
-          isDeleted: false,
+          AND: [
+            { isDeleted: false },
+            { writer: { isDeleted: false } },
+            { title: { contains: `${searchTerm}*` } },
+          ],
         }
       : {};
 
@@ -92,15 +102,18 @@ export default async function AdminPage({
       <PostTab
         initialPosts={posts}
         currentPage={page}
-        totalPages={Math.ceil(total / pageSize)}
+        totalPages={Math.max(1, Math.ceil(total / pageSize))}
       />
     );
   } else if (activeTab === 'comments') {
     const page = Number(params.commentPage) || 1;
     const where = searchTerm
       ? {
-          content: { contains: searchTerm },
-          isDeleted: false,
+          AND: [
+            { isDeleted: false },
+            { writer: { isDeleted: false } },
+            { content: { contains: `${searchTerm}*` } },
+          ],
         }
       : {};
 
@@ -122,10 +135,12 @@ export default async function AdminPage({
       <CommentTab
         initialComments={comments}
         currentPage={page}
-        totalPages={Math.ceil(total / pageSize)}
+        totalPages={Math.max(1, Math.ceil(total / pageSize))}
       />
     );
   }
+
+  await anonymizeOldUsersAction();
 
   return (
     <div className="container mx-auto px-4 py-12">

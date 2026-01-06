@@ -23,14 +23,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-interface PostDetailActionsProps {
+type PostDetailActionsProps = {
   postId: string;
-}
+};
 
 export function PostDetailActions({ postId }: PostDetailActionsProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
-  const [open, setOpen] = useState(false); // 다이얼로그 상태
+  const [open, setOpen] = useState(false);
 
   const handleDelete = async () => {
     setIsPending(true);
@@ -66,7 +66,7 @@ export function PostDetailActions({ postId }: PostDetailActionsProps) {
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link
-                href={`/admin/posts/edit?id=${postId}`}
+                href={`/admin/post/edit?id=${postId}`}
                 className="flex w-full items-center"
               >
                 <Pencil className="mr-2 h-4 w-4" />

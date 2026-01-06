@@ -2,26 +2,25 @@
 
 import { Reply, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import type { CurrentUser } from '@/app/(blog)/blog.type';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
-interface CommentFormProps {
+type CommentFormProps = {
   onSubmit: (content: string) => void;
   replyToId?: string | null;
   onCancelReply?: () => void;
   placeholder?: string;
-  userImage?: string | null;
-  userName?: string;
-}
+  currentUser: CurrentUser | null;
+};
 
 export function CommentForm({
   onSubmit,
   replyToId,
   onCancelReply,
-  placeholder = '댓글을 작성하세요...',
-  userImage,
-  userName = '사용자',
+  placeholder = '댓글을 작성하세요.',
+  currentUser,
 }: CommentFormProps) {
   const [content, setContent] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -52,7 +51,10 @@ export function CommentForm({
     <form onSubmit={handleSubmit} className="mb-6">
       <div className="flex gap-4">
         <Avatar className="h-10 w-10 shrink-0">
-          <AvatarImage src={userImage || undefined} alt={userName} />
+          <AvatarImage
+            src={currentUser?.image || undefined}
+            alt={currentUser?.name || '사용자'}
+          />
           <AvatarFallback className="bg-muted">
             <User className="h-5 w-5 text-muted-foreground" />
           </AvatarFallback>
@@ -76,6 +78,7 @@ export function CommentForm({
 
           <Textarea
             ref={textareaRef}
+            name="comment"
             placeholder={placeholder}
             value={content}
             onChange={(e) => setContent(e.target.value)}
