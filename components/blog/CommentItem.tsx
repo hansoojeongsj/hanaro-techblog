@@ -137,7 +137,6 @@ export function CommentItem({
             )}
           </div>
 
-          {/* 내용 처리 */}
           {isContentMasked ? (
             <span className="text-muted-foreground italic">
               삭제된 댓글입니다

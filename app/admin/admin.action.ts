@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// 유저 탈퇴 액션 (7일 유예 기간 시작)
 export async function withdrawUserAction(userId: number) {
   try {
     const session = await auth();
@@ -36,7 +35,6 @@ export async function withdrawUserAction(userId: number) {
   }
 }
 
-// 7일 경과 유저 익명화 (영구 탈퇴 및 재가입 허용 처리)
 export async function anonymizeOldUsersAction() {
   try {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -71,7 +69,6 @@ export async function anonymizeOldUsersAction() {
   }
 }
 
-// 유저 복구 액션
 export async function restoreUserAction(userId: number) {
   try {
     const session = await auth();
@@ -94,7 +91,6 @@ export async function restoreUserAction(userId: number) {
   }
 }
 
-// 게시글 삭제 액션
 export async function deletePostAction(postId: number) {
   try {
     const session = await auth();
@@ -115,7 +111,6 @@ export async function deletePostAction(postId: number) {
   }
 }
 
-// 댓글 삭제 액션
 export async function deleteCommentAction(commentId: number, postId: number) {
   try {
     const session = await auth();

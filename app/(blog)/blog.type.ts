@@ -16,7 +16,7 @@ export type Category = {
   description: string | null;
 };
 
-export type Post = {
+type Post = {
   id: number;
   title: string;
   content: string;

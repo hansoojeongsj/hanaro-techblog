@@ -35,7 +35,7 @@ export const getCategoriesWithStats = async (): Promise<
   });
 
   return categories.map((data) => ({
-    id: data.id, // String() 제거
+    id: data.id,
     name: data.name,
     slug: data.slug,
     description: data.description,
@@ -70,7 +70,6 @@ export const getCategoryDetailBySlug = async (
 
   if (!data) return null;
 
-  // 2. blog.type.ts의 PostCardData 구조에 완벽히 맞춤
   return {
     id: data.id,
     name: data.name,

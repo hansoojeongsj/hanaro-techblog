@@ -92,18 +92,16 @@ export const getPostDetail = async (
     isWriterDeleted: post.writer.isDeleted,
     likesCount: post._count.postLikes,
     isLiked: post.postLikes.length > 0,
-    formattedDate: post.createdAt.toLocaleDateString(), // 날짜 포맷팅 추가
-    // 1. Comment[] 타입 규격에 완벽하게 맞춤
+    formattedDate: post.createdAt.toLocaleDateString(),
     formattedComments: post.comments.map((c) => ({
       id: c.id,
       content: c.content,
       isDeleted: c.isDeleted,
       writerId: c.writerId,
-      postId: post.id, // [중요] 누락되었던 postId 추가
-      parentId: c.parentId, // number | null 유지
+      postId: post.id,
+      parentId: c.parentId,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
-      // 2. author 대신 writer 객체로 전달
       writer: {
         id: c.writer.id,
         name: c.writer.name,
