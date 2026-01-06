@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { GrassData } from '@/app/(blog)/blog.service';
+import type { GrassData } from '@/app/(blog)/blog.type';
 import {
   Tooltip,
   TooltipContent,

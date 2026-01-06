@@ -1,14 +1,11 @@
 import { prisma } from '@/lib/prisma';
+import type { CategoryWithCount, GrassData, PostCardData } from './blog.type';
 
-export type GrassData = {
-  date: string;
-  count: number;
-  createdCount: number;
-  updatedCount: number;
-  level: number;
-};
-
-export const getHomeData = async () => {
+export const getHomeData = async (): Promise<{
+  categories: CategoryWithCount[];
+  recentPosts: PostCardData[];
+  formattedGrassData: GrassData[];
+}> => {
   const [categories, recentPosts, allPostsDates] = await Promise.all([
     prisma.category.findMany({
       include: {
@@ -27,8 +24,12 @@ export const getHomeData = async () => {
       where: { isDeleted: false, writer: { isDeleted: false } },
       orderBy: { createdAt: 'desc' },
       include: {
-        category: true,
-        writer: true,
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+        writer: {
+          select: { id: true, name: true, image: true, isDeleted: true },
+        },
         _count: { select: { comments: true, postLikes: true } },
       },
     }),
@@ -66,5 +67,9 @@ export const getHomeData = async () => {
     level: Math.min(Math.ceil((stats.created + stats.updated) / 2), 4),
   }));
 
-  return { categories, recentPosts, formattedGrassData };
+  return {
+    categories: categories as CategoryWithCount[],
+    recentPosts: recentPosts as unknown as PostCardData[],
+    formattedGrassData,
+  };
 };

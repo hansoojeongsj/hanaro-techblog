@@ -3,7 +3,7 @@ import type { CategoryWithLatest } from '@/app/(blog)/categories/category.servic
 import { CategoryCard } from '@/components/blog/CategoryCard';
 
 const mockCategory: CategoryWithLatest = {
-  id: '1',
+  id: 1,
   name: 'React',
   slug: 'react',
   description: '리액트 관련 개념과 실전 예제들을 다룹니다.',

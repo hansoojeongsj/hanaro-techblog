@@ -23,13 +23,13 @@ export function CommentList({
   currentUser,
 }: CommentListProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments);
-  const [replyToId, setReplyToId] = useState<string | null>(null);
+  const [replyToId, setReplyToId] = useState<number | null>(null);
 
   useEffect(() => {
     setComments(initialComments);
   }, [initialComments]);
 
-  const handleReplyClick = (id: string) => {
+  const handleReplyClick = (id: number) => {
     setReplyToId((prev) => (prev === id ? null : id));
   };
 
@@ -37,10 +37,10 @@ export function CommentList({
     setReplyToId(null);
   };
 
-  const handleEditComment = async (id: string, newContent: string) => {
+  const handleEditComment = async (id: number, newContent: string) => {
     setReplyToId(null);
     try {
-      await updateComment(Number(id), newContent, postId);
+      await updateComment(id, newContent, postId);
       toast.success('댓글이 수정되었습니다.');
     } catch (_) {
       toast.error('수정 실패');
@@ -56,8 +56,8 @@ export function CommentList({
       await createComment({
         postId,
         content,
-        parentId: replyToId ? Number(replyToId) : null,
-        writerId: Number(currentUser.id),
+        parentId: replyToId,
+        writerId: currentUser.id,
       });
       setReplyToId(null);
       toast.success('댓글이 등록되었습니다.');
@@ -66,10 +66,10 @@ export function CommentList({
     }
   };
 
-  const handleDeleteComment = async (id: string) => {
+  const handleDeleteComment = async (id: number) => {
     if (!confirm('삭제하시겠습니까?')) return;
     try {
-      await deleteComment(Number(id), postId);
+      await deleteComment(id, postId);
       toast.success('삭제되었습니다.');
     } catch (_) {
       toast.error('삭제 실패');
@@ -77,7 +77,8 @@ export function CommentList({
   };
 
   const rootComments = comments.filter((c) => !c.parentId);
-  const getReplies = (parentId: string) =>
+
+  const getReplies = (parentId: number) =>
     comments.filter((c) => c.parentId === parentId);
 
   return (
@@ -95,7 +96,7 @@ export function CommentList({
           <div key={comment.id} className="space-y-4">
             <CommentItem
               comment={comment}
-              onReply={handleReplyClick}
+              onReply={() => handleReplyClick(comment.id)}
               onEdit={handleEditComment}
               onDelete={handleDeleteComment}
               onEditStart={handleEditStart}
@@ -105,7 +106,7 @@ export function CommentList({
               <CommentItem
                 key={reply.id}
                 comment={reply}
-                onReply={handleReplyClick}
+                onReply={() => handleReplyClick(reply.id)}
                 onEdit={handleEditComment}
                 onDelete={handleDeleteComment}
                 onEditStart={handleEditStart}

@@ -54,7 +54,9 @@ export function PostForm({
     }
   }, [state]);
 
-  const selectedCategory = categories.find((c) => c.id === preview.categoryId);
+  const selectedCategory = categories.find(
+    (c) => String(c.id) === preview.categoryId,
+  );
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -114,7 +116,7 @@ export function PostForm({
               </SelectTrigger>
               <SelectContent>
                 {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
+                  <SelectItem key={c.id} value={String(c.id)}>
                     {c.name}
                   </SelectItem>
                 ))}

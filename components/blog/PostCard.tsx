@@ -54,7 +54,7 @@ export function PostCard({ post, category }: PostCardProps) {
 
       <CardContent className="flex-1">
         <CardDescription className="line-clamp-2">
-          {post.excerpt}
+          {post.content.replace(/[#*`]/g, '').slice(0, 80)}
         </CardDescription>
       </CardContent>
 
@@ -63,26 +63,26 @@ export function PostCard({ post, category }: PostCardProps) {
           <div className="relative z-20 flex items-center gap-2">
             <Avatar className="h-6 w-6">
               <AvatarImage
-                src={post.writerImage || undefined}
-                alt={post.writer}
+                src={post.writer.image || undefined}
+                alt={post.writer.name}
               />
               <AvatarFallback className="bg-muted">
                 <User className="h-3 w-3 text-muted-foreground" />
               </AvatarFallback>
             </Avatar>
             <span className="text-[14px] text-muted-foreground">
-              {post.writer}
+              {post.writer.name}
             </span>
           </div>
 
           <div className="flex items-center gap-4 text-muted-foreground text-xs">
             <div className="flex items-center gap-1">
               <Heart className="h-3.5 w-3.5" />
-              <span>{post.likes}</span>
+              <span>{post._count.postLikes}</span>
             </div>
             <div className="flex items-center gap-1">
               <MessageCircle className="h-3.5 w-3.5" />
-              <span>{post.commentCount}</span>
+              <span>{post._count.comments}</span>
             </div>
           </div>
         </div>

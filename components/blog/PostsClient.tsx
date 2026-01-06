@@ -9,14 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export type PostForList = PostCardData & {
-  content: string;
-  categoryId: string;
+  categoryId: number;
   category: CategoryData;
 };
 
 type PostsClientProps = {
   initialPosts: PostForList[];
-  categories: { id: string; name: string }[];
+  categories: { id: number; name: string }[];
   searchQuery: string;
 };
 
@@ -27,7 +26,7 @@ export function PostsClient({
 }: PostsClientProps) {
   const router = useRouter();
   const [localQuery, setLocalQuery] = useState(searchQuery);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -13,7 +13,7 @@ export default async function WritePage() {
   });
 
   const formattedCategories = categories.map((c) => ({
-    id: String(c.id),
+    id: c.id,
     name: c.name,
     slug: c.slug,
   }));

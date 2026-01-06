@@ -91,23 +91,7 @@ export default async function HomePage() {
                     className="animate-slide-up"
                     style={{ animationDelay: `${0.3 + idx * 0.1}s` }}
                   >
-                    <PostCard
-                      post={{
-                        id: String(post.id),
-                        title: post.title,
-                        excerpt: post.content.substring(0, 80),
-                        createdAt: post.createdAt,
-                        writerId: String(post.writerId),
-                        writer: post.writer.name,
-                        likes: post._count.postLikes,
-                        commentCount: post._count.comments,
-                        writerImage: post.writer.image,
-                      }}
-                      category={{
-                        ...post.category,
-                        id: String(post.category.id),
-                      }}
-                    />
+                    <PostCard post={post} category={post.category} />
                   </div>
                 ))}
               </div>
@@ -121,7 +105,7 @@ export default async function HomePage() {
             style={{ animationDelay: '0.5s' }}
           >
             <CategoryList
-              categories={categories.map((c) => ({ ...c, id: String(c.id) }))}
+              categories={categories.map((c) => ({ ...c, id: c.id }))}
             />
           </aside>
         </div>

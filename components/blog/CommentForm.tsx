@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 type CommentFormProps = {
   onSubmit: (content: string) => void;
-  replyToId?: string | null;
+  replyToId?: number | null;
   onCancelReply?: () => void;
   placeholder?: string;
   currentUser: CurrentUser | null;

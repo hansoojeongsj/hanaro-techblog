@@ -17,7 +17,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
   return (
     <PostsClient
       initialPosts={formattedPosts}
-      categories={categories.map((c) => ({ ...c, id: String(c.id) }))}
+      categories={categories.map((c) => ({ ...c, id: c.id }))}
       searchQuery={query || ''}
     />
   );

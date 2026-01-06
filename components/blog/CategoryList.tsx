@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { categoryIcons } from '@/lib/utils';
 
 type CategoryWithCount = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   _count: {
