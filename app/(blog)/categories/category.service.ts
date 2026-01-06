@@ -43,7 +43,6 @@ export const getCategoriesWithStats = async (): Promise<
     name: data.name,
     slug: data.slug,
     description: data.description,
-    icon: data.icon,
     postCount: data._count.posts,
     latestPostTitle: data.posts[0]?.title,
   }));
@@ -77,7 +76,6 @@ export const getCategoryDetailBySlug = async (
     id: String(data.id),
     name: data.name,
     slug: data.slug,
-    icon: data.icon,
     postCount: data._count.posts,
     description: data.description,
     posts: data.posts.map((post) => ({

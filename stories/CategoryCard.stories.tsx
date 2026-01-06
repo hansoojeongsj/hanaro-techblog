@@ -6,7 +6,6 @@ const mockCategory: CategoryWithLatest = {
   id: '1',
   name: 'React',
   slug: 'react',
-  icon: '⚛️',
   description: '리액트 관련 개념과 실전 예제들을 다룹니다.',
   postCount: 12,
   latestPostTitle: 'useEffect 완벽 정리',
