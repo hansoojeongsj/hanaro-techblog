@@ -134,12 +134,20 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <span>Less</span>
           <div className="flex gap-1">
-            {[0, 1, 2, 3, 4].map((level) => (
-              <div
-                key={level}
-                className={`h-3 w-3 rounded-sm ${getGrassClass(level)}`}
-              />
-            ))}
+            <TooltipProvider delayDuration={0}>
+              {[0, 1, 2, 3, 4].map((level) => (
+                <Tooltip key={level}>
+                  <TooltipTrigger asChild>
+                    <div
+                      className={`h-3 w-3 rounded-sm ${getGrassClass(level)}`}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="px-2 py-1 text-[10px]">
+                    {['0', '1-2', '3-5', '6-9', '10+'][level]}
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </TooltipProvider>
           </div>
           <span>More</span>
         </div>
