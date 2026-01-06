@@ -95,7 +95,7 @@ export default async function AdminPage({
           AND: [
             { isDeleted: false },
             { writer: { isDeleted: false } },
-            { title: { contains: `${searchTerm}*` } },
+            { title: { contains: searchTerm } },
           ],
         }
       : {};
@@ -128,7 +128,7 @@ export default async function AdminPage({
           AND: [
             { isDeleted: false },
             { writer: { isDeleted: false } },
-            { content: { contains: `${searchTerm}*` } },
+            { content: { contains: searchTerm } },
           ],
         }
       : {};
