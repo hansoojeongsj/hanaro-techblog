@@ -26,6 +26,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { pending } = useFormStatus();
 
   useEffect(() => {
     if (state?.type === 'error') {
@@ -161,7 +162,9 @@ export default function SignupPage() {
               </div>
             </div>
 
-            <SignupButton />
+            <Button type="submit" className="h-12 w-full" disabled={pending}>
+              {pending ? '가입 중...' : '회원가입'}
+            </Button>
           </form>
 
           <p className="mt-6 text-center text-muted-foreground text-sm">
@@ -177,15 +180,5 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-function SignupButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button type="submit" className="h-12 w-full" disabled={pending}>
-      {pending ? '가입 중...' : '회원가입'}
-    </Button>
   );
 }
