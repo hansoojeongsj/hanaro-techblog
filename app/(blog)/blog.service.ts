@@ -9,7 +9,6 @@ export type GrassData = {
 };
 
 export const getHomeData = async () => {
-  // 카테고리 & 최근 게시글 병렬 조회
   const [categories, recentPosts, allPostsDates] = await Promise.all([
     prisma.category.findMany({
       include: {
@@ -36,7 +35,6 @@ export const getHomeData = async () => {
     prisma.post.findMany({ select: { createdAt: true, updatedAt: true } }),
   ]);
 
-  // 잔디밭 데이터 가공 (KST 기준)
   const grassStatsMap = new Map<string, { created: number; updated: number }>();
   const getKSTDate = (date: Date) => {
     const kstOffset = 9 * 60 * 60 * 1000;

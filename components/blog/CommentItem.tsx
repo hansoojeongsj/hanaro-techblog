@@ -144,6 +144,7 @@ export function CommentItem({
           ) : isEditing ? (
             <div className="space-y-2">
               <Textarea
+                name="comment"
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
                 className="min-h-20 resize-none bg-background"

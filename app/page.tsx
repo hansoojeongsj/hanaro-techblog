@@ -78,7 +78,7 @@ export default async function HomePage() {
               <h2 className="font-bold text-2xl">최근 게시글</h2>
               <Button variant="ghost" asChild>
                 <Link href="/posts" className="flex items-center gap-2">
-                  전체 보기 <ArrowRight className="h-4 w-4" />
+                  전체 게시글 보기 <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>

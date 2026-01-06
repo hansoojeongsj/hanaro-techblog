@@ -64,7 +64,7 @@ export function PostTab({
       extraActions={
         <Button asChild>
           <Link href="/admin/post/write">
-            <Plus className="mr-1 h-4 w-4" /> 새 글
+            <Plus className="mr-1 h-4 w-4" /> 새 글 작성
           </Link>
         </Button>
       }
