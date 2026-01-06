@@ -18,7 +18,7 @@ model User {
   passwd    String?   @db.VarChar(256)
   image     String?   @db.VarChar(255)
   role      Role      @default(USER)
-  provider  String?   @default("credentials") @db.VarChar(31) 
+  provider  String   @default("credentials") @db.VarChar(31) 
 
   isDeleted   Boolean   @default(false)
 
@@ -35,7 +35,6 @@ model Category {
   id          Int     @id @default(autoincrement()) @db.UnsignedTinyInt
   name        String  @unique @db.VarChar(31)
   slug        String  @unique @db.VarChar(31)
-  icon        String? @db.VarChar(31)
   description String? @db.VarChar(255)
 
   posts Post[]

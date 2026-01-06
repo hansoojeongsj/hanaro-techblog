@@ -2,6 +2,7 @@ import { ArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { PostCard } from '@/components/blog/PostCard';
 import { Button } from '@/components/ui/button';
+import { categoryIcons } from '@/lib/utils';
 import { getCategoryDetailBySlug } from '../category.service';
 
 type PageProps = {
@@ -25,6 +26,7 @@ export default async function CategoryPostsPage({ params }: PageProps) {
       </div>
     );
   }
+  const categoryIcon = categoryIcons[slug] || '📁';
 
   return (
     <div className="container mx-auto px-4 pt-12 pb-16">
@@ -36,7 +38,7 @@ export default async function CategoryPostsPage({ params }: PageProps) {
       </Link>
 
       <div className="mb-12 animate-fade-in text-center">
-        <span className="mb-4 block text-5xl">{category.icon || '📁'}</span>
+        <span className="mb-4 block text-5xl">{categoryIcon}</span>
         <h1 className="mb-4 font-bold text-3xl md:text-4xl">{category.name}</h1>
         <p className="text-muted-foreground">{category.postCount}개의 게시글</p>
       </div>

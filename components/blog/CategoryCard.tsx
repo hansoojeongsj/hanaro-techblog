@@ -9,14 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { categoryIcons } from '@/lib/utils';
 
 type CategoryCardProps = {
   category: CategoryWithLatest;
 };
 
 export function CategoryCard({ category }: CategoryCardProps) {
-  const { slug, icon, name, postCount, description, latestPostTitle } =
-    category;
+  const { slug, name, postCount, description, latestPostTitle } = category;
+  const categoryIcon = categoryIcons[category.slug] || '📁';
 
   return (
     <Link href={`/categories/${slug}`} className="block h-full">
@@ -24,7 +25,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-3xl">{icon || '📁'}</span>
+              <span className="text-3xl">{categoryIcon}</span>
               <div>
                 <CardTitle className="text-xl transition-colors group-hover:text-primary">
                   {name}

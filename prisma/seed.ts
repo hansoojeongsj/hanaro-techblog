@@ -594,37 +594,31 @@ async function main() {
     {
       name: 'JavaScript',
       slug: 'javascript',
-      icon: '🟨',
       description: '웹의 근간이 되는 프로그래밍 언어 JavaScript에 대한 글',
     },
     {
       name: 'TypeScript',
       slug: 'typescript',
-      icon: '🔷',
       description: '타입 안정성을 제공하는 TypeScript 관련 글',
     },
     {
       name: 'React',
       slug: 'react',
-      icon: '⚛️',
       description: 'Facebook이 만든 UI 라이브러리 React 관련 글',
     },
     {
       name: 'Next.js',
       slug: 'nextjs',
-      icon: '▲',
       description: 'React 기반 풀스택 프레임워크 Next.js 관련 글',
     },
     {
       name: 'CSS',
       slug: 'css',
-      icon: '🎨',
       description: '스타일링과 레이아웃에 관한 CSS 글',
     },
     {
       name: 'Git',
       slug: 'git',
-      icon: '🔀',
       description: '버전 관리 시스템 Git 관련 글',
     },
   ];
