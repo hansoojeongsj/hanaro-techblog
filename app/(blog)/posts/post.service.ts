@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { filterStopWords } from '@/lib/search';
 
 export type PostListData = {
   id: string;
@@ -16,14 +17,16 @@ export type PostListData = {
 };
 
 export async function getAllPosts(query?: string) {
+  const filteredQuery = await filterStopWords(query || '');
+
   const posts = await prisma.post.findMany({
     where: {
       isDeleted: false,
       writer: { isDeleted: false },
       ...(query && {
         OR: [
-          { title: { search: `${query}*` } },
-          { content: { search: `${query}*` } },
+          { title: { search: `${filteredQuery}*` } },
+          { content: { search: `${filteredQuery}*` } },
         ],
       }),
     },

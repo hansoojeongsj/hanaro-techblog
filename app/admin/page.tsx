@@ -6,6 +6,7 @@ import { UserTab } from '@/components/admin/UserTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { filterStopWords } from '@/lib/search';
 import { anonymizeOldUsersAction } from './admin.action';
 
 export default async function AdminPage({
@@ -23,7 +24,10 @@ export default async function AdminPage({
   if (session?.user?.role !== 'ADMIN') return <div>권한이 없습니다.</div>;
   const params = await searchParams;
   const activeTab = params.tab || 'users';
-  const searchTerm = params.search || '';
+  const rawSearchTerm = params.search || '';
+
+  const searchTerm = await filterStopWords(rawSearchTerm);
+
   const pageSize = 20;
 
   const [userCount, postCount, commentCount] = await Promise.all([
@@ -37,14 +41,14 @@ export default async function AdminPage({
   if (activeTab === 'users') {
     const page = Number(params.page) || 1;
     const where =
-      searchTerm.trim() !== ''
+      rawSearchTerm.trim() !== ''
         ? {
             AND: [
               { isDeleted: false },
               {
                 OR: [
-                  { name: { contains: searchTerm } },
-                  { email: { contains: searchTerm } },
+                  { name: { contains: rawSearchTerm } },
+                  { email: { contains: rawSearchTerm } },
                 ],
               },
             ],
@@ -75,7 +79,7 @@ export default async function AdminPage({
           AND: [
             { isDeleted: false },
             { writer: { isDeleted: false } },
-            { title: { contains: searchTerm } },
+            { title: { contains: `${searchTerm}*` } },
           ],
         }
       : {};
@@ -108,7 +112,7 @@ export default async function AdminPage({
           AND: [
             { isDeleted: false },
             { writer: { isDeleted: false } },
-            { content: { contains: searchTerm } },
+            { content: { contains: `${searchTerm}*` } },
           ],
         }
       : {};
