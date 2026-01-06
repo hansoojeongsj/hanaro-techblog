@@ -1,16 +1,5 @@
 import { prisma } from '@/lib/prisma';
-
-export type PostCardData = {
-  id: string;
-  title: string;
-  excerpt: string;
-  createdAt: Date;
-  writer: string;
-  writerId: string;
-  writerImage: string | null;
-  likes: number;
-  commentCount: number;
-};
+import type { PostCardData } from '../blog.type';
 
 export type CategoryBase = {
   id: string;
@@ -19,7 +8,6 @@ export type CategoryBase = {
   icon?: string | null;
   description?: string | null;
   postCount: number;
-  color?: string | null;
 };
 
 export type CategoryWithLatest = CategoryBase & {

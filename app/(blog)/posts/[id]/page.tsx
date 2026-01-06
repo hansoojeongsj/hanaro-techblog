@@ -1,5 +1,6 @@
 import { ArrowLeft, Calendar, Clock, MessageCircle, User } from 'lucide-react';
 import Link from 'next/link';
+import type { CurrentUser } from '@/app/(blog)/blog.type';
 import { CategoryBadge } from '@/components/blog/CategoryBadge';
 import { CommentList } from '@/components/blog/CommentList';
 import { PostDetailActions } from '@/components/blog/PostDetailActions';
@@ -8,18 +9,18 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { auth } from '@/lib/auth';
+import { formatFullDate } from '@/lib/utils';
 import { getPostDetail } from '../post.service';
 
-interface PageProps {
+type PageProps = {
   params: Promise<{ id: string }>;
-}
+};
 
 export default async function PostDetailPage({ params }: PageProps) {
   const session = await auth();
   const { id } = await params;
   const currentUserId = session?.user?.id ? Number(session.user.id) : null;
 
-  // 1. 서비스에서 가공된 데이터 가져오기
   const post = await getPostDetail(Number(id), currentUserId);
 
   if (!post) {
@@ -33,9 +34,17 @@ export default async function PostDetailPage({ params }: PageProps) {
     );
   }
 
-  // 2. 권한 체크 (관리자이거나 작성자 본인이거나)
+  const currentUser: CurrentUser | null = session?.user
+    ? {
+        id: Number(session.user.id),
+        name: session.user.name || '사용자',
+        image: session.user.image || null,
+        role: session.user.role === 'ADMIN' ? 'ADMIN' : 'USER',
+      }
+    : null;
+
   const canManage =
-    session?.user?.role === 'ADMIN' || currentUserId === post.writerId;
+    currentUser?.role === 'ADMIN' || currentUser?.id === post.writerId;
 
   return (
     <article className="container mx-auto max-w-4xl px-4 py-12">
@@ -88,14 +97,14 @@ export default async function PostDetailPage({ params }: PageProps) {
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
-            <span>{post.formattedDate}</span>
+            <span>{formatFullDate(post.createdAt)}</span>
           </div>
           {post.updatedAt > post.createdAt && (
             <>
               <Separator orientation="vertical" className="h-4" />
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>수정됨</span>
+                <span>수정: {formatFullDate(post.updatedAt)}</span>
               </div>
             </>
           )}
@@ -122,7 +131,7 @@ export default async function PostDetailPage({ params }: PageProps) {
             postId={post.id}
             initialLikes={post.likesCount}
             initialIsLiked={post.isLiked}
-            userId={currentUserId}
+            currentUser={currentUser}
           />
           <Button variant="outline" size="lg" className="gap-2">
             <MessageCircle className="h-5 w-5" /> 댓글
@@ -134,10 +143,7 @@ export default async function PostDetailPage({ params }: PageProps) {
         <CommentList
           initialComments={post.formattedComments}
           postId={post.id}
-          currentUserId={currentUserId || 0}
-          isAdmin={session?.user?.role === 'ADMIN'}
-          userImage={session?.user?.image}
-          userName={session?.user?.name || '사용자'}
+          currentUser={currentUser}
         />
       </div>
     </article>

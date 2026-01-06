@@ -81,17 +81,12 @@ export const getPostDetail = async (
     isWriterDeleted: post.writer.isDeleted,
     likesCount: post._count.postLikes,
     isLiked: post.postLikes.length > 0,
-    formattedDate: new Date(post.createdAt).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }),
     formattedComments: post.comments.map((c) => ({
       id: String(c.id),
       writerId: c.writerId,
       author: {
-        name: c.writer.isDeleted ? '탈퇴한 사용자' : c.writer.name,
-        avatar: c.writer.isDeleted ? undefined : c.writer.image || undefined,
+        name: c.writer.name,
+        avatar: c.writer.image || undefined,
       },
       content: c.content,
       createdAt: c.createdAt,

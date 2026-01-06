@@ -1,10 +1,10 @@
 import { FileText, type LucideIcon, MessageSquare, Users } from 'lucide-react';
 
-interface AdminStatsProps {
+type AdminStatsProps = {
   userCount: number;
   postCount: number;
   commentCount: number;
-}
+};
 
 export function AdminStats({
   userCount,

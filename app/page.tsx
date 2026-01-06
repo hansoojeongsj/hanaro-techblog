@@ -8,10 +8,10 @@ import { CategoryList } from '@/components/blog/CategoryList';
 import { GrassCalendar } from '@/components/blog/GrassCalendar';
 import { PostCard } from '@/components/blog/PostCard';
 import { Button } from '@/components/ui/button';
-import { getHomeData } from './(blog)/home.service';
+import { getHomeData } from './(blog)/blog.service';
 
 export default async function HomePage() {
-  cacheLife({ stale: 1, revalidate: 3600 });
+  cacheLife({ stale: 10, revalidate: 3600 });
 
   const { categories, recentPosts, formattedGrassData } = await getHomeData();
 

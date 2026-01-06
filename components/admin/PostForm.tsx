@@ -46,7 +46,6 @@ export function PostForm({
     isMode: false,
   });
 
-  // 에러 알림
   useEffect(() => {
     if (state?.error) {
       const msg =

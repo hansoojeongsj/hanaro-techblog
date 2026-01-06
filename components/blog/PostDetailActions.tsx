@@ -23,9 +23,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-interface PostDetailActionsProps {
+type PostDetailActionsProps = {
   postId: string;
-}
+};
 
 export function PostDetailActions({ postId }: PostDetailActionsProps) {
   const router = useRouter();

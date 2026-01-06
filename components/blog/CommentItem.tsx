@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
+import type { Comment, CurrentUser } from '@/app/(blog)/blog.type';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,30 +21,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
+import { cn, formatFullDate } from '@/lib/utils';
 
-export interface CommentType {
-  id: string;
-  writerId: number;
-  author: { name: string; avatar?: string };
-  content: string;
-  createdAt: Date | string;
-  updatedAt?: Date | string;
-  isDeleted?: boolean;
-  parentId?: string | null;
-  isWriterDeleted?: boolean;
-}
-
-interface CommentItemProps {
-  comment: CommentType;
+type CommentItemProps = {
+  comment: Comment;
   onReply: (id: string) => void;
   onEdit: (id: string, newContent: string) => void;
   onDelete: (id: string) => void;
   isReply?: boolean;
-  currentUserId: number;
-  isAdmin: boolean;
+  currentUser: CurrentUser | null;
   onEditStart?: () => void;
-}
+};
 
 export function CommentItem({
   comment,
@@ -51,8 +39,7 @@ export function CommentItem({
   onEdit,
   onDelete,
   isReply = false,
-  currentUserId,
-  isAdmin,
+  currentUser,
   onEditStart,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -60,16 +47,6 @@ export function CommentItem({
 
   const isUserMasked = comment.isWriterDeleted;
   const isContentMasked = comment.isDeleted || comment.isWriterDeleted;
-
-  const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   const handleSaveEdit = () => {
     if (editContent.trim()) {
@@ -88,7 +65,10 @@ export function CommentItem({
     setIsEditing(true);
   };
 
-  const canManage = isAdmin || Number(comment.writerId) === currentUserId;
+  const canManage =
+    currentUser?.role === 'ADMIN' ||
+    Number(comment.writerId) === currentUser?.id;
+
   const isUpdated =
     comment.updatedAt &&
     new Date(comment.updatedAt).getTime() >
@@ -123,12 +103,12 @@ export function CommentItem({
                     !isContentMasked && isUpdated && 'hidden sm:inline',
                   )}
                 >
-                  {formatDate(comment.createdAt)}
+                  {formatFullDate(comment.createdAt)}
                 </span>
                 {!isContentMasked && isUpdated && comment.updatedAt && (
                   <span className="flex items-center text-muted-foreground text-xs before:content-['•'] sm:before:mr-1">
                     <span className="mr-1 sm:inline">수정:</span>
-                    {formatDate(comment.updatedAt)}
+                    {formatFullDate(comment.updatedAt)}
                   </span>
                 )}
               </div>

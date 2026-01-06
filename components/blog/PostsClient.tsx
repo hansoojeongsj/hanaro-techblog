@@ -3,25 +3,22 @@
 import { FileText, Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  type CategoryData,
-  PostCard,
-  type PostCardData,
-} from '@/components/blog/PostCard';
+import type { CategoryData, PostCardData } from '@/app/(blog)/blog.type';
+import { PostCard } from '@/components/blog/PostCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export interface PostForList extends PostCardData {
+export type PostForList = PostCardData & {
   content: string;
   categoryId: string;
   category: CategoryData;
-}
+};
 
-interface PostsClientProps {
+type PostsClientProps = {
   initialPosts: PostForList[];
   categories: { id: string; name: string }[];
   searchQuery: string;
-}
+};
 
 export function PostsClient({
   initialPosts,
