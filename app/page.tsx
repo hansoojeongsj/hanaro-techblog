@@ -21,19 +21,18 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/10" />
         <div className="container relative mx-auto px-4 text-center">
           <div className="mx-auto max-w-3xl animate-fade-in">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 font-medium text-sm">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 font-semibold text-sm">
               <Sparkles className="h-4 w-4" />
               <span>Digital Hana 路 금융서비스개발 8기</span>
             </div>
-            <h1 className="mb-6 font-bold text-4xl tracking-tight md:text-5xl lg:text-6xl">
-              프론트엔드 개발의
-              <br />
-              <span className="text-primary">모든 것</span>을 담다
+
+            <h1 className="mb-4 font-bold text-4xl md:text-5xl lg:text-6xl">
+              프론트엔드의 <span className="text-primary">모든 것</span>
             </h1>
             <p className="mx-auto mb-8 max-w-xl text-lg text-muted-foreground">
-              JavaScript, TypeScript, React 등 프론트엔드 기술에 대한
+              JavaScript, TypeScript, React 등
               <br />
-              깊이 있는 글과 실전 팁을 공유합니다.
+              프론트엔드 기술에 대한 깊이 있는 글을 공유합니다.
             </p>
             <div className="flex justify-center gap-4">
               <Button size="lg" asChild>

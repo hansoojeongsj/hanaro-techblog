@@ -46,7 +46,6 @@ model Post {
   title     String   @db.VarChar(255)
   content   String   @db.LongText
   thumbnail String?  @db.VarChar(255)
-  views     Int      @default(0) @db.UnsignedInt
   isDeleted Boolean @default(false)
 
   writerId   Int @db.UnsignedInt

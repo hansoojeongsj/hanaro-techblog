@@ -123,9 +123,8 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
 
           <DropdownMenuItem
             className="cursor-pointer text-destructive focus:text-destructive"
-            onSelect={(e) => {
-              e.preventDefault(); // 드롭다운이 닫히는 기본 동작 방지
-              setIsDialogOpen(true); // 다이얼로그 열기
+            onSelect={() => {
+              setIsDialogOpen(true);
             }}
           >
             <UserX className="mr-2 h-4 w-4" />
@@ -134,7 +133,6 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* 회원 탈퇴 확인 다이얼로그 (DropdownMenu 밖으로 분리) */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-105">
           <DialogHeader>
@@ -154,7 +152,7 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
               아니요
             </Button>
             <Button
-              variant="destructive" // 탈퇴는 경고의 의미로 빨간색 추천
+              variant="destructive"
               onClick={handleWithdrawal}
               disabled={isPending}
             >
