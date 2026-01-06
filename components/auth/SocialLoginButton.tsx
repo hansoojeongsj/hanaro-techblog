@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 
 type SocialProvider = 'github' | 'google';
 
-interface SocialLoginButtonProps {
+type SocialLoginButtonProps = {
   provider: SocialProvider;
-}
+};
 
 export function SocialLoginButton({ provider }: SocialLoginButtonProps) {
   const config = {

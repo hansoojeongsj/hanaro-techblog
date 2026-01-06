@@ -65,17 +65,50 @@ export const {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === 'github') {
-        const email = user.email;
-        if (!email) return false;
+      if (!user.email) return false;
 
-        const dbUser = await prisma.user.findUnique({ where: { email } });
+      let dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
 
-        if (dbUser?.isDeleted) {
-          throw new Error('DELETED_USER');
+      if (account?.provider !== 'credentials') {
+        if (dbUser) {
+          if (dbUser.isDeleted) {
+            throw new Error(
+              '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.',
+            );
+          }
+
+          const savedProvider = dbUser.provider;
+          const currentProvider = account?.provider;
+
+          if (savedProvider && savedProvider !== currentProvider) {
+            const providerName =
+              savedProvider === 'github'
+                ? '깃허브'
+                : savedProvider === 'google'
+                  ? '구글'
+                  : '이메일';
+            throw new Error(
+              `해당 이메일은 이미 ${providerName}로 가입되어 있습니다. ${providerName}로 로그인해 주세요.`,
+            );
+          }
+        } else {
+          dbUser = await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name || user.email.split('@')[0],
+              image: user.image,
+              role: 'USER',
+              provider: account?.provider,
+            },
+          });
         }
-        return true;
+
+        user.id = String(dbUser.id);
+        user.role = dbUser.role;
       }
+
       return true;
     },
     async jwt({ token, user, trigger, session }) {

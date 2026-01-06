@@ -140,8 +140,9 @@ export function ProfileToggle({ isLoggedIn, user }: ProfileToggleProps) {
           <DialogHeader>
             <DialogTitle>정말 탈퇴하시겠습니까?</DialogTitle>
             <DialogDescription className="pt-2 text-left">
-              탈퇴 신청 후 7일 이내에는 관리자를 통해 복구가 가능하며, 7일이
-              지나면 모든 개인정보가 파기되어 복구가 불가능합니다.
+              탈퇴 신청 후 7일 이내에는 관리자를 통해 복구가 가능하며,
+              <br />
+              이후 복구가 불가능합니다.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4 flex flex-row justify-end gap-2">

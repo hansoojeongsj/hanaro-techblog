@@ -41,8 +41,7 @@ export async function signUp(
   if (deletedUser) {
     return {
       type: 'error',
-      message:
-        '탈퇴 처리 중인 이메일입니다. 탈퇴 신청 7일 이후에 다시 가입하실 수 있습니다.',
+      message: '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.',
     };
   }
 

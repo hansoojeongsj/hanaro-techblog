@@ -10,6 +10,7 @@ import { prisma } from '@/lib/prisma';
 export async function withdrawUserAction(userId: number) {
   try {
     const session = await auth();
+
     if (
       !session ||
       (session.user.role !== 'ADMIN' && Number(session.user.id) !== userId)
@@ -17,22 +18,16 @@ export async function withdrawUserAction(userId: number) {
       return { success: false, message: '권한이 없습니다.' };
     }
 
-    await prisma.$transaction([
-      // 유저 상태 변경 (Soft Delete)
-      prisma.user.update({
-        where: { id: userId },
-        data: {
-          isDeleted: true,
-          deletedAt: new Date(),
-        },
-      }),
-      // 해당 유저의 모든 세션 삭제 (즉시 로그아웃)
-      prisma.session.deleteMany({
-        where: { userId: userId },
-      }),
-    ]);
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
 
     revalidatePath('/', 'layout');
+
     return {
       success: true,
       message: '탈퇴 유예 처리가 완료되었습니다. (7일 후 정보 파기)',

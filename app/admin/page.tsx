@@ -26,7 +26,6 @@ export default async function AdminPage({
   const searchTerm = params.search || '';
   const pageSize = 20;
 
-  // 통계 데이터 조회
   const [userCount, postCount, commentCount] = await Promise.all([
     prisma.user.count({ where: { isDeleted: false } }),
     prisma.post.count({ where: { isDeleted: false } }),
@@ -37,14 +36,20 @@ export default async function AdminPage({
 
   if (activeTab === 'users') {
     const page = Number(params.page) || 1;
-    const where = searchTerm
-      ? {
-          OR: [
-            { name: { contains: searchTerm } },
-            { email: { contains: searchTerm } },
-          ],
-        }
-      : {};
+    const where =
+      searchTerm.trim() !== ''
+        ? {
+            AND: [
+              { isDeleted: false },
+              {
+                OR: [
+                  { name: { contains: searchTerm } },
+                  { email: { contains: searchTerm } },
+                ],
+              },
+            ],
+          }
+        : {};
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -60,15 +65,18 @@ export default async function AdminPage({
       <UserTab
         initialUsers={users}
         currentPage={page}
-        totalPages={Math.ceil(total / pageSize)}
+        totalPages={Math.max(1, Math.ceil(total / pageSize))}
       />
     );
   } else if (activeTab === 'posts') {
     const page = Number(params.postPage) || 1;
     const where = searchTerm
       ? {
-          isDeleted: false,
-          title: { search: `${searchTerm}*` },
+          AND: [
+            { isDeleted: false },
+            { writer: { isDeleted: false } },
+            { title: { contains: searchTerm } },
+          ],
         }
       : {};
 
@@ -90,15 +98,18 @@ export default async function AdminPage({
       <PostTab
         initialPosts={posts}
         currentPage={page}
-        totalPages={Math.ceil(total / pageSize)}
+        totalPages={Math.max(1, Math.ceil(total / pageSize))}
       />
     );
   } else if (activeTab === 'comments') {
     const page = Number(params.commentPage) || 1;
     const where = searchTerm
       ? {
-          isDeleted: false,
-          content: { search: `${searchTerm}*` },
+          AND: [
+            { isDeleted: false },
+            { writer: { isDeleted: false } },
+            { content: { contains: searchTerm } },
+          ],
         }
       : {};
 
@@ -120,7 +131,7 @@ export default async function AdminPage({
       <CommentTab
         initialComments={comments}
         currentPage={page}
-        totalPages={Math.ceil(total / pageSize)}
+        totalPages={Math.max(1, Math.ceil(total / pageSize))}
       />
     );
   }

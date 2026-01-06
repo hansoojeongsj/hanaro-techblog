@@ -11,7 +11,6 @@ enum Role {
   USER
   ADMIN
 }
-
 model User {
   id        Int       @id @default(autoincrement()) @db.UnsignedInt
   name      String    @db.VarChar(31)
@@ -19,14 +18,14 @@ model User {
   passwd    String?   @db.VarChar(256)
   image     String?   @db.VarChar(255)
   role      Role      @default(USER)
+  provider  String?   @default("credentials") @db.VarChar(31) 
+
   isDeleted   Boolean   @default(false)
 
   createdAt DateTime  @default(now()) @db.Timestamp(0)
   updatedAt DateTime  @default(now()) @updatedAt @db.Timestamp(0)
   deletedAt DateTime? @db.Timestamp(0)
 
-  accounts  Account[]
-  sessions  Session[]
   posts     Post[]
   comments  Comment[]
   postLikes PostLike[]
@@ -104,35 +103,4 @@ model PostLike {
 
 model StopWord {
   value String @id @db.VarChar(31)
-}
-
-model Account {
-  id                Int     @id @default(autoincrement()) @db.UnsignedInt
-  userId            Int     @db.UnsignedInt
-  type              String  @db.VarChar(31)
-  provider          String  @db.VarChar(31)
-  providerAccountId String  @db.VarChar(255)
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?    @db.UnsignedInt
-  token_type        String? @db.VarChar(31)
-  scope             String? @db.VarChar(255)
-  id_token          String? @db.Text
-  session_state     String? @db.VarChar(255)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_Account_user")
-
-  @@unique([provider, providerAccountId], map: "uniq_Account_provider")
-  @@index([userId], map: "fk_Account_user")
-}
-
-model Session {
-  id           Int      @id @default(autoincrement()) @db.UnsignedInt
-  sessionToken String   @unique(map: "uniq_Session_token") @db.VarChar(255)
-  userId       Int      @db.UnsignedInt
-  expires      DateTime @db.Timestamp(0)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_Session_user")
-
-  @@index([userId], map: "fk_Session_user")
 }

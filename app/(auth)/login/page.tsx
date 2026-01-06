@@ -27,13 +27,16 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (error) {
-      const msg =
-        error === 'AccessDenied' || error === 'Callback'
-          ? '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.'
-          : '로그인 중 에러가 발생했습니다.';
-
+      let msg = '로그인 중 에러가 발생했습니다.';
+      if (error === 'AccessDenied') {
+        msg = '이미 다른 소셜 계정으로 가입된 이메일입니다.';
+      } else if (error === 'Callback') {
+        msg = '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.';
+      }
       toast.error(msg, { id: 'auth-error' });
-      window.history.replaceState({}, '', window.location.pathname);
+      const url = new URL(window.location.href);
+      url.searchParams.delete('error');
+      window.history.replaceState({}, '', url.pathname);
     }
 
     if (state?.message) {

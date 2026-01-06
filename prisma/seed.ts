@@ -34,12 +34,13 @@ const randomComments = [
 ];
 
 async function main() {
-  console.log('기존 데이터를 싹 비웁니다...');
+  console.log('기존 데이터를 비웁니다...');
   await prisma.postLike.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.post.deleteMany();
   await prisma.category.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.stopWord.deleteMany();
 
   console.log('시드 데이터 생성을 시작합니다...');
   const rawStopWords = [
@@ -579,7 +580,6 @@ async function main() {
     '힘입어',
   ];
 
-  // 2. 중복 제거 및 데이터 생성
   const stopWordsData = Array.from(new Set(rawStopWords)).map((word) => ({
     value: word,
   }));
@@ -639,6 +639,7 @@ async function main() {
       name: '관리자',
       passwd: password,
       role: 'ADMIN',
+      provider: 'credentials',
     },
   });
 
@@ -651,6 +652,7 @@ async function main() {
         name: `일반유저${i}`,
         passwd: password,
         role: 'USER',
+        provider: 'credentials',
       },
     });
     dummyUsers.push(user);
