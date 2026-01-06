@@ -7,7 +7,6 @@ const nextConfig: NextConfig = {
   experimental: {
     typedEnv: true,
   },
-  // 필수
   typedRoutes: true,
   images: {
     remotePatterns: [{ hostname: 'picsum.photos' }],
