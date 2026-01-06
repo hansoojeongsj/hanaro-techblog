@@ -4,10 +4,15 @@ import { CommentTab } from '@/components/admin/CommentTab';
 import { PostTab } from '@/components/admin/PostTab';
 import { UserTab } from '@/components/admin/UserTab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { filterStopWords } from '@/lib/search';
 import { anonymizeOldUsersAction } from './admin.action';
+
+type SiteStats = {
+  active_users: number | bigint;
+  total_posts: number | bigint;
+  total_comments: number | bigint;
+};
 
 export default async function AdminPage({
   searchParams,
@@ -20,8 +25,6 @@ export default async function AdminPage({
     search?: string;
   }>;
 }) {
-  const session = await auth();
-  if (session?.user?.role !== 'ADMIN') return <div>권한이 없습니다.</div>;
   const params = await searchParams;
   const activeTab = params.tab || 'users';
   const rawSearchTerm = params.search || '';
@@ -30,11 +33,24 @@ export default async function AdminPage({
 
   const pageSize = 20;
 
-  const [userCount, postCount, commentCount] = await Promise.all([
-    prisma.user.count({ where: { isDeleted: false } }),
-    prisma.post.count({ where: { isDeleted: false } }),
-    prisma.comment.count({ where: { isDeleted: false } }),
-  ]);
+  // const [userCount, postCount, commentCount] = await Promise.all([
+  //   prisma.user.count({ where: { isDeleted: false } }),
+  //   prisma.post.count({ where: { isDeleted: false } }),
+  //   prisma.comment.count({ where: { isDeleted: false } }),
+  // ]);
+
+  const stats = await prisma.$queryRaw<SiteStats[]>`
+    SELECT
+      (SELECT COUNT(*) FROM User WHERE isDeleted = false) AS active_users,
+      (SELECT COUNT(*) FROM Post WHERE isDeleted = false) AS total_posts,
+      (SELECT COUNT(*) FROM Comment WHERE isDeleted = false) AS total_comments
+  `;
+
+  const s = stats[0];
+
+  const userCount = Number(s.active_users);
+  const postCount = Number(s.total_posts);
+  const commentCount = Number(s.total_comments);
 
   let content: React.ReactNode;
 

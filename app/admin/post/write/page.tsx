@@ -9,12 +9,13 @@ export default async function WritePage() {
   if (!session || session.user.role !== 'ADMIN') redirect('/login');
 
   const categories = await prisma.category.findMany({
-    select: { id: true, name: true },
+    select: { id: true, name: true, slug: true },
   });
 
   const formattedCategories = categories.map((c) => ({
-    ...c,
     id: String(c.id),
+    name: c.name,
+    slug: c.slug,
   }));
 
   return (

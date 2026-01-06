@@ -45,10 +45,12 @@ export function CommentTab({
 }: CommentTabProps) {
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, postId: number) => {
     if (!confirm('정말 댓글을 삭제하시겠습니까?')) return;
     setIsDeleting(id);
-    const result = await deleteCommentAction(id);
+
+    const result = await deleteCommentAction(id, postId);
+
     if (result.success) toast.success(result.message);
     setIsDeleting(null);
   };
@@ -128,7 +130,9 @@ export function CommentTab({
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => handleDelete(comment.id)}
+                        onClick={() =>
+                          handleDelete(comment.id, comment.post.id)
+                        }
                         disabled={comment.isDeleted}
                       >
                         <Trash2 className="mr-2 h-4 w-4" /> 삭제

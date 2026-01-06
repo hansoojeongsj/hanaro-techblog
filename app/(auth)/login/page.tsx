@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { type ActionState, loginAction } from './login.action';
+import { type LoginState, loginAction } from './login.action';
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [state, formAction] = useActionState(loginAction, {
     message: '',
     type: '',
-  } as ActionState);
+  } as LoginState);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -76,7 +76,6 @@ export default function LoginPage() {
             </span>
           </div>
 
-          {/* Email Form */}
           <form action={formAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">이메일</Label>

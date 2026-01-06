@@ -3,15 +3,15 @@
 import { AuthError } from 'next-auth';
 import { signIn } from '@/lib/auth';
 
-export type ActionState = {
+export type LoginState = {
   message: string;
   type: 'success' | 'error' | '';
 };
 
 export async function loginAction(
-  _prevState: ActionState,
+  _prevState: LoginState,
   formData: FormData,
-): Promise<ActionState> {
+): Promise<LoginState> {
   try {
     const email = formData.get('email');
     const passwd = formData.get('passwd');

@@ -27,7 +27,6 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // 서버 응답 처리
   useEffect(() => {
     if (state?.type === 'error') {
       toast.error(state.message);
