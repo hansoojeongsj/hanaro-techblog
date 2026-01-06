@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 type PostDetailActionsProps = {
-  postId: string;
+  postId: number;
 };
 
 export function PostDetailActions({ postId }: PostDetailActionsProps) {
@@ -35,7 +35,7 @@ export function PostDetailActions({ postId }: PostDetailActionsProps) {
   const handleDelete = async () => {
     setIsPending(true);
     try {
-      const result = await deletePostAction(Number(postId));
+      const result = await deletePostAction(postId);
 
       if (result.success) {
         toast.success('게시글이 삭제되었습니다.');

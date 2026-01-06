@@ -21,19 +21,18 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/10" />
         <div className="container relative mx-auto px-4 text-center">
           <div className="mx-auto max-w-3xl animate-fade-in">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 font-medium text-sm">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 font-semibold text-sm">
               <Sparkles className="h-4 w-4" />
               <span>Digital Hana 路 금융서비스개발 8기</span>
             </div>
-            <h1 className="mb-6 font-bold text-4xl tracking-tight md:text-5xl lg:text-6xl">
-              프론트엔드 개발의
-              <br />
-              <span className="text-primary">모든 것</span>을 담다
+
+            <h1 className="mb-4 font-bold text-4xl md:text-5xl lg:text-6xl">
+              프론트엔드의 <span className="text-primary">모든 것</span>
             </h1>
             <p className="mx-auto mb-8 max-w-xl text-lg text-muted-foreground">
-              JavaScript, TypeScript, React 등 프론트엔드 기술에 대한
+              JavaScript, TypeScript, React 등
               <br />
-              깊이 있는 글과 실전 팁을 공유합니다.
+              프론트엔드 기술에 대한 깊이 있는 글을 공유합니다.
             </p>
             <div className="flex justify-center gap-4">
               <Button size="lg" asChild>
@@ -79,7 +78,7 @@ export default async function HomePage() {
               <h2 className="font-bold text-2xl">최근 게시글</h2>
               <Button variant="ghost" asChild>
                 <Link href="/posts" className="flex items-center gap-2">
-                  전체 보기 <ArrowRight className="h-4 w-4" />
+                  전체 게시글 보기 <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -92,23 +91,7 @@ export default async function HomePage() {
                     className="animate-slide-up"
                     style={{ animationDelay: `${0.3 + idx * 0.1}s` }}
                   >
-                    <PostCard
-                      post={{
-                        id: String(post.id),
-                        title: post.title,
-                        excerpt: post.content.substring(0, 80),
-                        createdAt: post.createdAt,
-                        writerId: String(post.writerId),
-                        writer: post.writer.name,
-                        likes: post._count.postLikes,
-                        commentCount: post._count.comments,
-                        writerImage: post.writer.image,
-                      }}
-                      category={{
-                        ...post.category,
-                        id: String(post.category.id),
-                      }}
-                    />
+                    <PostCard post={post} category={post.category} />
                   </div>
                 ))}
               </div>
@@ -122,7 +105,7 @@ export default async function HomePage() {
             style={{ animationDelay: '0.5s' }}
           >
             <CategoryList
-              categories={categories.map((c) => ({ ...c, id: String(c.id) }))}
+              categories={categories.map((c) => ({ ...c, id: c.id }))}
             />
           </aside>
         </div>

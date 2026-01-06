@@ -3,10 +3,8 @@
 import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 
-type SocialProvider = 'github' | 'google';
-
 type SocialLoginButtonProps = {
-  provider: SocialProvider;
+  provider: 'github' | 'google';
 };
 
 export function SocialLoginButton({ provider }: SocialLoginButtonProps) {

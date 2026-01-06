@@ -1,11 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import type { PostCardData } from '../blog.type';
+import type { CategoryData, PostCardData } from '../blog.type';
 
-export type CategoryBase = {
-  id: string;
-  name: string;
-  slug: string;
-  icon?: string | null;
+export type CategoryBase = CategoryData & {
   description?: string | null;
   postCount: number;
 };
@@ -39,11 +35,10 @@ export const getCategoriesWithStats = async (): Promise<
   });
 
   return categories.map((data) => ({
-    id: String(data.id),
+    id: data.id,
     name: data.name,
     slug: data.slug,
     description: data.description,
-    icon: data.icon,
     postCount: data._count.posts,
     latestPostTitle: data.posts[0]?.title,
   }));
@@ -59,7 +54,9 @@ export const getCategoryDetailBySlug = async (
         where: { isDeleted: false, writer: { isDeleted: false } },
         orderBy: { createdAt: 'desc' },
         include: {
-          writer: true,
+          writer: {
+            select: { id: true, name: true, image: true, isDeleted: true },
+          },
           _count: { select: { comments: true, postLikes: true } },
         },
       },
@@ -74,28 +71,30 @@ export const getCategoryDetailBySlug = async (
   if (!data) return null;
 
   return {
-    id: String(data.id),
+    id: data.id,
     name: data.name,
     slug: data.slug,
-    icon: data.icon,
     postCount: data._count.posts,
     description: data.description,
     posts: data.posts.map((post) => ({
-      id: String(post.id),
+      id: post.id,
       title: post.title,
-      excerpt: post.content.substring(0, 80),
       content: post.content,
       createdAt: post.createdAt,
-      writer: post.writer.name,
-      writerId: String(post.writerId),
-      writerImage: post.writer.image,
-      likes: post._count.postLikes,
-      commentCount: post._count.comments,
-      categoryId: String(data.id),
+      writer: {
+        id: post.writer.id,
+        name: post.writer.name,
+        image: post.writer.image,
+        isDeleted: post.writer.isDeleted,
+      },
       category: {
-        id: String(data.id),
+        id: data.id,
         name: data.name,
         slug: data.slug,
+      },
+      _count: {
+        comments: post._count.comments,
+        postLikes: post._count.postLikes,
       },
     })),
   };

@@ -19,6 +19,7 @@ type PageProps = {
 export default async function PostDetailPage({ params }: PageProps) {
   const session = await auth();
   const { id } = await params;
+
   const currentUserId = session?.user?.id ? Number(session.user.id) : null;
 
   const post = await getPostDetail(Number(id), currentUserId);
@@ -55,7 +56,7 @@ export default async function PostDetailPage({ params }: PageProps) {
         >
           <ArrowLeft className="h-4 w-4" /> 목록으로
         </Link>
-        {canManage && <PostDetailActions postId={String(post.id)} />}
+        {canManage && <PostDetailActions postId={post.id} />}
       </div>
 
       <header className="mb-8 animate-fade-in">

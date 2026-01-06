@@ -1,8 +1,10 @@
+import type { PostForList } from '@/components/blog/PostsClient';
 import { prisma } from '@/lib/prisma';
 import { filterStopWords } from '@/lib/search';
+import type { PostDetailData } from '../blog.type';
 
 export type PostListData = {
-  id: string;
+  id: number;
   title: string;
   excerpt: string;
   content: string;
@@ -12,11 +14,11 @@ export type PostListData = {
   writerImage: string | null;
   likes: number;
   commentCount: number;
-  categoryId: string;
-  category: { id: string; name: string; slug: string };
+  categoryId: number;
+  category: { id: number; name: string; slug: string };
 };
 
-export async function getAllPosts(query?: string) {
+export async function getAllPosts(query?: string): Promise<PostForList[]> {
   const filteredQuery = await filterStopWords(query || '');
 
   const posts = await prisma.post.findMany({
@@ -39,26 +41,33 @@ export async function getAllPosts(query?: string) {
   });
 
   return posts.map((post) => ({
-    ...post,
-    id: String(post.id),
-    categoryId: String(post.categoryId),
-    excerpt:
-      post.content.length > 80
-        ? `${post.content.substring(0, 80)}...`
-        : post.content,
-    writerId: String(post.writerId),
-    writer: post.writer.name,
-    writerImage: post.writer.image,
-    likes: post._count.postLikes,
-    commentCount: post._count.comments,
-    category: { ...post.category, id: String(post.category.id) },
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    createdAt: post.createdAt,
+    writer: {
+      id: post.writer.id,
+      name: post.writer.name,
+      image: post.writer.image,
+      isDeleted: post.writer.isDeleted,
+    },
+    category: {
+      id: post.category.id,
+      name: post.category.name,
+      slug: post.category.slug,
+    },
+    _count: {
+      comments: post._count.comments,
+      postLikes: post._count.postLikes,
+    },
+    categoryId: post.categoryId,
   }));
 }
 
 export const getPostDetail = async (
   postId: number,
   currentUserId: number | null,
-) => {
+): Promise<PostDetailData | null> => {
   const post = await prisma.post.findUnique({
     where: { id: postId },
     include: {
@@ -69,7 +78,7 @@ export const getPostDetail = async (
         include: { writer: true },
       },
       postLikes: { where: { userId: currentUserId || 0 } },
-      _count: { select: { postLikes: true } },
+      _count: { select: { postLikes: true, comments: true } },
     },
   });
 
@@ -78,22 +87,38 @@ export const getPostDetail = async (
   return {
     ...post,
     id: post.id,
+    writerId: post.writerId,
     isWriterDeleted: post.writer.isDeleted,
     likesCount: post._count.postLikes,
     isLiked: post.postLikes.length > 0,
+    formattedDate: post.createdAt.toLocaleDateString(),
     formattedComments: post.comments.map((c) => ({
-      id: String(c.id),
-      writerId: c.writerId,
-      author: {
-        name: c.writer.name,
-        avatar: c.writer.image || undefined,
-      },
+      id: c.id,
       content: c.content,
+      isDeleted: c.isDeleted,
+      writerId: c.writerId,
+      postId: post.id,
+      parentId: c.parentId,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
-      parentId: c.parentId ? String(c.parentId) : null,
+      writer: {
+        id: c.writer.id,
+        name: c.writer.name,
+        image: c.writer.image,
+        isDeleted: c.writer.isDeleted,
+      },
       isWriterDeleted: c.writer.isDeleted,
-      isDeleted: c.isDeleted,
     })),
-  };
+    writer: {
+      id: post.writer.id,
+      name: post.writer.name,
+      image: post.writer.image,
+      isDeleted: post.writer.isDeleted,
+    },
+    category: {
+      id: post.category.id,
+      name: post.category.name,
+      slug: post.category.slug,
+    },
+  } as PostDetailData;
 };

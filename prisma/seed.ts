@@ -594,37 +594,31 @@ async function main() {
     {
       name: 'JavaScript',
       slug: 'javascript',
-      icon: '🟨',
       description: '웹의 근간이 되는 프로그래밍 언어 JavaScript에 대한 글',
     },
     {
       name: 'TypeScript',
       slug: 'typescript',
-      icon: '🔷',
       description: '타입 안정성을 제공하는 TypeScript 관련 글',
     },
     {
       name: 'React',
       slug: 'react',
-      icon: '⚛️',
       description: 'Facebook이 만든 UI 라이브러리 React 관련 글',
     },
     {
       name: 'Next.js',
       slug: 'nextjs',
-      icon: '▲',
       description: 'React 기반 풀스택 프레임워크 Next.js 관련 글',
     },
     {
       name: 'CSS',
       slug: 'css',
-      icon: '🎨',
       description: '스타일링과 레이아웃에 관한 CSS 글',
     },
     {
       name: 'Git',
       slug: 'git',
-      icon: '🔀',
       description: '버전 관리 시스템 Git 관련 글',
     },
   ];
@@ -643,9 +637,9 @@ async function main() {
     },
   });
 
-  console.log('일반 사용자 50명 생성 중...');
+  console.log('일반 사용자 30명 생성 중...');
   const dummyUsers = [];
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 30; i++) {
     const user = await prisma.user.create({
       data: {
         email: `user${i}@test.com`,
@@ -681,11 +675,9 @@ async function main() {
         content: `${category.name}에 대한 심도 깊은 내용을 다룹니다.
 관리자가 작성한 소중한 글입니다.
 
-
-엔터 반영 테스트
-
-줄바꿈이 잘 되나요?`,
-        views: getRandomInt(100, 1000),
+안녕하세요,
+줄바꿈이 잘 되나요?
+`,
         isDeleted: i % 10 === 0,
         categoryId: category.id,
         writerId: admin.id,
@@ -724,7 +716,7 @@ async function main() {
           for (let k = 0; k < replyCount; k++) {
             await prisma.comment.create({
               data: {
-                content: `└ 답글입니다: ${getRandomElement(randomComments)}`,
+                content: `답글입니다: ${getRandomElement(randomComments)}`,
                 postId: post.id,
                 writerId: getRandomElement(dummyUsers).id,
                 parentId: rootComment.id,
@@ -745,7 +737,7 @@ main()
     await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e);
+    console.error('PrismaError>>', e);
     await prisma.$disconnect();
     process.exit(1);
   });

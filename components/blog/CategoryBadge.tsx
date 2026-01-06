@@ -1,10 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import type { CategoryBase } from '@/app/(blog)/categories/category.service';
+
+export type CategoryBadgeCategory = {
+  id: string | number;
+  name: string;
+  slug: string;
+  postCount?: number;
+};
 
 type CategoryBadgeProps = {
-  category: CategoryBase;
+  category: CategoryBadgeCategory;
   showCount?: boolean;
   size?: 'sm' | 'md' | 'lg';
 };

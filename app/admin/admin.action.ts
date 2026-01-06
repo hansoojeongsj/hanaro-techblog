@@ -4,9 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-/**
- * 유저 탈퇴 액션 (7일 유예 기간 시작)
- */
 export async function withdrawUserAction(userId: number) {
   try {
     const session = await auth();
@@ -38,14 +35,10 @@ export async function withdrawUserAction(userId: number) {
   }
 }
 
-/**
- * 7일 경과 유저 익명화 (영구 탈퇴 및 재가입 허용 처리)
- */
 export async function anonymizeOldUsersAction() {
   try {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    // 7일이 지났고 아직 익명화되지 않은 유저 조회
     const targets = await prisma.user.findMany({
       where: {
         isDeleted: true,
@@ -69,15 +62,13 @@ export async function anonymizeOldUsersAction() {
     );
 
     await Promise.all(tasks);
+    revalidatePath('/admin');
     console.log(`${targets.length}명의 유저 정보가 익명화되었습니다.`);
   } catch (error) {
     console.error('익명화 작업 중 에러:', error);
   }
 }
 
-/**
- * 유저 복구 액션
- */
 export async function restoreUserAction(userId: number) {
   try {
     const session = await auth();
@@ -100,9 +91,6 @@ export async function restoreUserAction(userId: number) {
   }
 }
 
-/**
- * 게시글 삭제 액션 (Soft Delete)
- */
 export async function deletePostAction(postId: number) {
   try {
     const session = await auth();
@@ -123,10 +111,7 @@ export async function deletePostAction(postId: number) {
   }
 }
 
-/**
- * 댓글 삭제 액션 (Soft Delete)
- */
-export async function deleteCommentAction(commentId: number) {
+export async function deleteCommentAction(commentId: number, postId: number) {
   try {
     const session = await auth();
     if (session?.user?.role !== 'ADMIN') {
@@ -139,7 +124,7 @@ export async function deleteCommentAction(commentId: number) {
     });
 
     revalidatePath('/admin');
-    revalidatePath('/posts');
+    revalidatePath(`/posts/${postId}`);
 
     return { success: true, message: '댓글이 삭제 처리되었습니다.' };
   } catch (error) {

@@ -36,7 +36,7 @@ export default async function EditPage({
         }}
         categories={categories.map((c) => ({
           ...c,
-          id: String(c.id),
+          id: c.id,
         }))}
         submitLabel="수정 완료"
       />

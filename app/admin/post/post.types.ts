@@ -1,9 +1,3 @@
-export type Category = {
-  id: string;
-  name: string;
-  color?: string;
-};
-
 export type PostFormData = {
   id?: string;
   title: string;

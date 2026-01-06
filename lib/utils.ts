@@ -34,3 +34,12 @@ export const formatFullDate = (date: Date | string | number): string => {
     day: 'numeric',
   }).format(d);
 };
+
+export const categoryIcons: Record<string, string> = {
+  javascript: '🟨',
+  typescript: '🔷',
+  react: '⚛️',
+  nextjs: '▲',
+  css: '🎨',
+  git: '🔀',
+};

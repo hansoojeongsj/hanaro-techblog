@@ -4,11 +4,8 @@ import { ArrowLeft, Eye, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
 import { useActionState, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import type {
-  Category,
-  FormState,
-  PostFormData,
-} from '@/app/admin/post/post.types';
+import type { CategoryData } from '@/app/(blog)/blog.type';
+import type { FormState, PostFormData } from '@/app/admin/post/post.types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,10 +18,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { CategoryBadge } from '../blog/CategoryBadge';
 
 type PostFormProps = {
   initialData?: PostFormData;
-  categories: Category[];
+  categories: CategoryData[];
   action: (
     state: FormState | undefined,
     formData: FormData,
@@ -56,7 +54,9 @@ export function PostForm({
     }
   }, [state]);
 
-  const selectedCategory = categories.find((c) => c.id === preview.categoryId);
+  const selectedCategory = categories.find(
+    (c) => String(c.id) === preview.categoryId,
+  );
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -81,15 +81,12 @@ export function PostForm({
           <CardHeader>
             <div className="mb-2">
               {selectedCategory && (
-                <span
-                  className="rounded-full px-3 py-1 font-medium text-xs"
-                  style={{
-                    backgroundColor: `${selectedCategory.color}20`,
-                    color: selectedCategory.color,
+                <CategoryBadge
+                  category={{
+                    ...selectedCategory,
                   }}
-                >
-                  {selectedCategory.name}
-                </span>
+                  size="sm"
+                />
               )}
             </div>
             <CardTitle className="text-3xl">
@@ -119,7 +116,7 @@ export function PostForm({
               </SelectTrigger>
               <SelectContent>
                 {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
+                  <SelectItem key={c.id} value={String(c.id)}>
                     {c.name}
                   </SelectItem>
                 ))}

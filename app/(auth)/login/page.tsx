@@ -11,17 +11,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { type ActionState, loginAction } from './login.action';
+import { type LoginState, loginAction } from './login.action';
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
   const router = useRouter();
+  const { pending } = useFormStatus();
 
   const [state, formAction] = useActionState(loginAction, {
     message: '',
     type: '',
-  } as ActionState);
+  } as LoginState);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -29,7 +30,7 @@ export default function LoginPage() {
     if (error) {
       let msg = '로그인 중 에러가 발생했습니다.';
       if (error === 'AccessDenied') {
-        msg = '이미 다른 소셜 계정으로 가입된 이메일입니다.';
+        msg = '이미 다른 방식으로 가입된 이메일입니다.';
       } else if (error === 'Callback') {
         msg = '탈퇴 처리 중인 계정입니다. 재가입은 탈퇴 7일 후 가능합니다.';
       }
@@ -76,7 +77,6 @@ export default function LoginPage() {
             </span>
           </div>
 
-          {/* Email Form */}
           <form action={formAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">이메일</Label>
@@ -127,7 +127,9 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <LoginButton />
+            <Button type="submit" className="h-12 w-full" disabled={pending}>
+              {pending ? '로그인 중...' : '로그인'}
+            </Button>
           </form>
 
           <p className="mt-6 text-center text-muted-foreground text-sm">
@@ -143,15 +145,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-function LoginButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button type="submit" className="h-12 w-full" disabled={pending}>
-      {pending ? '로그인 중...' : '로그인'}
-    </Button>
   );
 }

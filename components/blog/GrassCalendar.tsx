@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { GrassData } from '@/app/(blog)/blog.service';
+import type { GrassData } from '@/app/(blog)/blog.type';
 import {
   Tooltip,
   TooltipContent,
@@ -17,7 +17,6 @@ type GrassCalendarProps = {
 const CELL_SIZE = 16;
 
 export function GrassCalendar({ data }: GrassCalendarProps) {
-  // 1. Map 변환 -> for...of 사용
   const dataMap = useMemo(() => {
     const map = new Map<string, GrassData>();
     for (const item of data) {
@@ -26,7 +25,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     return map;
   }, [data]);
 
-  // 365일 데이터 생성
   const fullYearData = useMemo(() => {
     const result: GrassData[] = [];
     const today = new Date();
@@ -50,10 +48,9 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
         },
       );
     }
-    return result.reverse(); // [1년전 -> 오늘] 순서
+    return result.reverse();
   }, [dataMap]);
 
-  // 주 단위 분리
   const weeks = useMemo(() => {
     const result: GrassData[][] = [];
     let currentWeek: GrassData[] = [];
@@ -96,7 +93,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
     return result;
   }, [fullYearData]);
 
-  // 월 라벨 위치
   const monthLabels = useMemo(() => {
     const labels: { month: string; col: number }[] = [];
     let lastMonth = '';
@@ -138,12 +134,20 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <span>Less</span>
           <div className="flex gap-1">
-            {[0, 1, 2, 3, 4].map((level) => (
-              <div
-                key={level}
-                className={`h-3 w-3 rounded-sm ${getGrassClass(level)}`}
-              />
-            ))}
+            <TooltipProvider delayDuration={0}>
+              {[0, 1, 2, 3, 4].map((level) => (
+                <Tooltip key={level}>
+                  <TooltipTrigger asChild>
+                    <div
+                      className={`h-3 w-3 rounded-sm ${getGrassClass(level)}`}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="px-2 py-1 text-[10px]">
+                    {['0', '1-2', '3-5', '6-9', '10+'][level]}
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </TooltipProvider>
           </div>
           <span>More</span>
         </div>
@@ -160,10 +164,8 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
           <span className="h-3"></span>
         </div>
 
-        {/* row-reverse 구조 */}
         <div className="scrollbar-hide flex flex-1 flex-row-reverse overflow-x-auto pb-4">
           <div className="relative min-w-fit pr-1">
-            {/* 월 라벨 */}
             <div className="relative mb-2 h-4 font-medium text-muted-foreground text-xs">
               {monthLabels.map(({ month, col }) => (
                 <span
@@ -176,7 +178,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
               ))}
             </div>
 
-            {/* 그리드 */}
             <TooltipProvider delayDuration={0}>
               <div className="flex gap-1 px-1">
                 {weeks.map((week) => (
@@ -197,7 +198,6 @@ export function GrassCalendar({ data }: GrassCalendarProps) {
                         </TooltipTrigger>
                         {day.date && (
                           <TooltipContent side="top" className="text-xs">
-                            {/* formatDate에 Date 객체로 넘겨서 타입 에러 해결 */}
                             <div className="mb-1 border-b pb-1 font-semibold">
                               {formatDate(new Date(day.date))}
                             </div>

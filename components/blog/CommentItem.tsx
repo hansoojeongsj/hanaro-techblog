@@ -25,9 +25,9 @@ import { cn, formatFullDate } from '@/lib/utils';
 
 type CommentItemProps = {
   comment: Comment;
-  onReply: (id: string) => void;
-  onEdit: (id: string, newContent: string) => void;
-  onDelete: (id: string) => void;
+  onReply: (id: number) => void;
+  onEdit: (id: number, newContent: string) => void;
+  onDelete: (id: number) => void;
   isReply?: boolean;
   currentUser: CurrentUser | null;
   onEditStart?: () => void;
@@ -66,8 +66,7 @@ export function CommentItem({
   };
 
   const canManage =
-    currentUser?.role === 'ADMIN' ||
-    Number(comment.writerId) === currentUser?.id;
+    currentUser?.role === 'ADMIN' || comment.writer.id === currentUser?.id;
 
   const isUpdated =
     comment.updatedAt &&
@@ -81,7 +80,9 @@ export function CommentItem({
       )}
 
       <Avatar className="h-10 w-10 shrink-0">
-        <AvatarImage src={isUserMasked ? undefined : comment.author.avatar} />
+        <AvatarImage
+          src={isUserMasked ? undefined : comment.writer.image || undefined}
+        />
         <AvatarFallback>
           <User className="h-3 w-3 text-muted-foreground" />
         </AvatarFallback>
@@ -94,7 +95,7 @@ export function CommentItem({
               <span
                 className={cn(isUserMasked && 'text-muted-foreground italic')}
               >
-                {isUserMasked ? '탈퇴한 사용자' : comment.author.name}
+                {isUserMasked ? '탈퇴한 사용자' : comment.writer.name}
               </span>
               <div className="flex items-center gap-2">
                 <span
@@ -136,7 +137,6 @@ export function CommentItem({
             )}
           </div>
 
-          {/* 내용 처리 */}
           {isContentMasked ? (
             <span className="text-muted-foreground italic">
               삭제된 댓글입니다
@@ -144,6 +144,7 @@ export function CommentItem({
           ) : isEditing ? (
             <div className="space-y-2">
               <Textarea
+                name="comment"
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
                 className="min-h-20 resize-none bg-background"
