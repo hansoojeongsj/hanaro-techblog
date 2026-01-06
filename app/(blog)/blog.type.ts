@@ -2,7 +2,6 @@ export type CategoryData = {
   id: string;
   name: string;
   slug: string;
-  icon?: string | null;
 };
 
 export type PostCardData = {
